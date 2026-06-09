@@ -17,6 +17,11 @@ from tsa_throughput.download import download_missing_reports
 from tsa_throughput.exceptions import ParseError, TSAThroughputError
 from tsa_throughput.models import DownloadResult, ThroughputRecord, ThroughputReport
 from tsa_throughput.normalization import normalize_report_links
+from tsa_throughput.parsing.batch import (
+    DEFAULT_PARSE_ALL_PATTERN,
+    BatchParseResult,
+    parse_reports_in_directory,
+)
 from tsa_throughput.parsing.registry import (
     ParserManifestEntry,
     get_parser,
@@ -136,6 +141,52 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Show tracebacks for package-specific errors.",
     )
     parse_parser.set_defaults(handler=_handle_parse)
+
+    parse_all_parser = subparsers.add_parser(
+        "parse-all",
+        help="Parse all matching TSA throughput PDFs in a directory to one CSV.",
+    )
+    parse_all_parser.add_argument(
+        "--input-dir",
+        required=True,
+        type=Path,
+        help="Directory containing downloaded TSA PDF reports.",
+    )
+    parse_all_parser.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        type=Path,
+        help="Path to write the combined parsed CSV.",
+    )
+    parse_all_parser.add_argument(
+        "--pattern",
+        default=DEFAULT_PARSE_ALL_PATTERN,
+        help="Glob pattern for PDF files under --input-dir.",
+    )
+    parse_all_parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Limit parsing to the first N pages of each PDF.",
+    )
+    parse_all_parser.add_argument(
+        "--parser",
+        dest="parser_name",
+        default=None,
+        help="Override parser selection by parser name.",
+    )
+    parse_all_parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Keep parsing remaining PDFs after a parser failure.",
+    )
+    parse_all_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    parse_all_parser.set_defaults(handler=_handle_parse_all)
 
     parsers_parser = subparsers.add_parser(
         "parsers",
@@ -282,13 +333,32 @@ def _handle_parse(args: argparse.Namespace) -> int:
     parser = get_parser(report, pdf_path, parser_name=args.parser_name)
     result = parser.parse(pdf_path, max_pages=args.max_pages, report=report)
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w", newline="", encoding="utf-8") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=CANONICAL_COLUMNS)
-        writer.writeheader()
-        writer.writerows(_record_to_row(record) for record in result.records)
+    _write_records_csv(result.records, output_path)
 
     print(f"Parsed {result.record_count} records to {output_path}")
+    return 0
+
+
+def _handle_parse_all(args: argparse.Namespace) -> int:
+    output_path = Path(args.output)
+    result = parse_reports_in_directory(
+        Path(args.input_dir),
+        pattern=args.pattern,
+        max_pages=args.max_pages,
+        parser_name=args.parser_name,
+        continue_on_error=args.continue_on_error,
+    )
+
+    _print_parse_all_summary(result, output_path)
+
+    if result.record_count == 0:
+        raise ParseError("no records produced by matching PDF files")
+
+    _write_records_csv(result.records, output_path)
+
+    if result.failures and not args.continue_on_error:
+        return 1
+
     return 0
 
 
@@ -395,6 +465,25 @@ def _download_result_text_line(result: DownloadResult) -> str:
     if result.message:
         parts.append(_display_value(result.message))
     return "\t".join(parts)
+
+
+def _print_parse_all_summary(result: BatchParseResult, output_path: Path) -> None:
+    print(f"PDF files found: {result.pdf_count}")
+    print(f"Parsed successfully: {result.parsed_count}")
+    print(f"Failed: {result.failed_count}")
+    print(f"Total records written: {result.record_count}")
+    print(f"Output path: {output_path}")
+
+    for failure in result.failures:
+        print(f"Failure: {failure.pdf_path.name}: {failure.error}", file=sys.stderr)
+
+
+def _write_records_csv(records: Sequence[ThroughputRecord], output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=CANONICAL_COLUMNS)
+        writer.writeheader()
+        writer.writerows(_record_to_row(record) for record in records)
 
 
 def _json_value(value: Any) -> Any:
