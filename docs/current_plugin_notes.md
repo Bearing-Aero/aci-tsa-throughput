@@ -1,6 +1,6 @@
 # Current Parser Plugin Notes
 
-These notes document the currently implemented parser plugin.
+These notes document the currently implemented parser plugins.
 
 ## Parser Identity
 
@@ -52,12 +52,217 @@ Parse confidence for successfully parsed records:
 high
 ```
 
+## Historical Parser Identity
+
+Parser name:
+
+```text
+historical_total_pax_kcm_hourly_checkpoint_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_total_pax_kcm
+```
+
+Supported date range:
+
+```text
+2023-01-07 through 2025-12-20
+```
+
+The historical parser uses the same 8-column `Total Pax + KCM PAX` table
+structure as the modern parser, but has its own parser identity and conservative
+manifest date range.
+
+## Strict Historical Parser Identity
+
+Parser name:
+
+```text
+historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_total_pax_kcm_strict_lines
+```
+
+Supported date range:
+
+```text
+2022-04-09 through 2022-12-31
+```
+
+The strict historical parser uses the same `Total Pax + KCM PAX` column mapping,
+but requires stricter pdfplumber line settings to avoid an extra blank column in
+the extracted table.
+
+## PMIS Historical Parser Identity
+
+Parser name:
+
+```text
+historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput
+```
+
+Supported date range:
+
+```text
+2022-04-02 through 2022-04-02
+```
+
+Metric name:
+
+```text
+pmis_total_customer_throughput_unadjusted
+```
+
+Metric source column:
+
+```text
+PMIS - Total Customer Throughput (Unadjusted)
+```
+
+The PMIS historical parser handles a 9-column layout with a `Metrics` column and
+the PMIS total customer throughput count column.
+
+## March 2022 Historical Parser Identity
+
+Parser name:
+
+```text
+historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_total_pax_kcm_march_2022
+```
+
+Supported date range:
+
+```text
+2022-03-05 through 2022-03-26
+```
+
+The March 2022 historical parser handles an 8-column `Total Pax + KCM PAX`
+layout. It is registered separately because local coverage shows neighboring
+week ending `2022-04-02` uses the PMIS 9-column layout, while week ending
+`2022-02-26` returns to the PMIS layout and should be handled as a separate
+boundary.
+
 ## Fixture
 
 Primary parser fixture:
 
 ```text
 tests/fixtures/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf
+```
+
+Verified boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2025-12-27.pdf
+```
+
+Historical parser representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2025-12-20.pdf
+```
+
+Historical parser start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2023-01-07.pdf
+```
+
+Strict historical parser representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-12-31.pdf
+```
+
+Strict historical parser start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-04-09.pdf
+```
+
+PMIS historical parser representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-04-02.pdf
+```
+
+March 2022 historical parser representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf
+```
+
+March 2022 historical parser start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf
 ```
 
 Inspection summary fixture:
@@ -70,6 +275,32 @@ The sample PDF covers:
 
 ```text
 2026-05-31 through 2026-06-06
+```
+
+The boundary fixture covers:
+
+```text
+2025-12-21 through 2025-12-27
+```
+
+The historical parser fixtures cover:
+
+```text
+2025-12-14 through 2025-12-20
+2023-01-01 through 2023-01-07
+```
+
+The strict historical parser fixtures cover:
+
+```text
+2022-12-25 through 2022-12-31
+2022-04-03 through 2022-04-09
+```
+
+The PMIS historical parser fixture covers:
+
+```text
+2022-03-27 through 2022-04-02
 ```
 
 The inspected full sample has:
@@ -276,15 +507,30 @@ available.
 
 ## Current Limitations
 
-- This plugin only supports the modern hourly checkpoint-level
+- These plugins only support the hourly checkpoint-level
   `Total Pax + KCM PAX` layout.
 - It does not parse older TSA layouts with different metric columns.
-- It does not attempt OCR.
-- It does not repair malformed PDFs.
-- It does not guess when the table header changes.
-- Parser manifest validity begins at `2026-01-01`, but that is a conservative
-  selection hint rather than a guarantee of coverage for every report after that
-  date.
+- They do not attempt OCR.
+- They do not repair malformed PDFs.
+- They do not guess when the table header changes.
+- Parser manifest validity begins at week ending `2025-12-27`, backed by the
+  modern boundary fixture and local coverage scan.
+- The historical plugin supports week ending `2023-01-07` through
+  `2025-12-20`, backed by local coverage scan and fixtures at both ends of the
+  range.
+- The strict historical plugin supports week ending `2022-04-09` through
+  `2022-12-31`, backed by local coverage scan and fixtures at both ends of the
+  range.
+- The PMIS historical plugin supports week ending `2022-04-02`, backed by local
+  coverage scan and its representative fixture.
+- The March 2022 historical plugin supports week ending `2022-03-05` through
+  `2022-03-26`, backed by local coverage scan and fixtures at both ends of the
+  range.
+- The next uncovered local boundary from `data/raw` is week ending
+  `2022-02-26`, currently a no-matching-parser failure. Inspection shows a
+  9-column PMIS `Total Customer Throughput (Unadjusted)` table, so the next
+  task should inspect whether that is a date-range extension for the PMIS
+  parser or a distinct earlier layout family.
 
 ## Future Historical Parser Notes
 
@@ -295,8 +541,23 @@ Use the parser coverage scanner against a downloaded corpus to find the next
 boundary before implementing a historical plugin:
 
 ```bash
+tsa-throughput download --from-installed-manifest --output-dir data/raw
 tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error
 ```
+
+If the installed source manifest is stale or incomplete, refresh a development
+manifest first and download from that file:
+
+```bash
+tsa-throughput manifest refresh --output data/source_manifest.json --max-pages 30
+tsa-throughput download --from-source-manifest data/source_manifest.json --output-dir data/raw
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error --max-pages 3
+```
+
+The downloader preserves `data/raw/manifest.json` and skips already downloaded
+PDFs on repeated runs unless `--overwrite` is supplied. Parser coverage should
+not be used to infer historical gaps from fixtures alone; real local TSA PDFs
+are required for parser development.
 
 The first failure after one or more successful modern parses is the best
 candidate PDF for the next fixture and parser plugin.

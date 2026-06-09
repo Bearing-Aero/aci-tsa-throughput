@@ -131,7 +131,7 @@ Important options:
 
 - `discover`: `--latest`, `--all`, `--max-pages`, `--format text|json`, `--debug`
 - `download`: `--latest`, `--all`, `--max-pages`, `--from-installed-manifest`,
-  `--output-dir`, `--overwrite`, `--debug`
+  `--from-source-manifest`, `--output-dir`, `--overwrite`, `--debug`
 - `manifest refresh`: `--output`, `--max-pages`, `--dry-run`,
   `--format text|json`, `--debug`
 - `parse`: positional PDF path, `--output`, `--max-pages`, `--parser`, `--debug`
@@ -158,16 +158,24 @@ The parser registry in `parsing/registry.py` loads
 by priority, imports parser classes, and calls `can_parse()` before selecting a
 parser.
 
-Current installed parser:
+Current installed parsers:
 
 ```text
 modern_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
+historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
-Class:
+Classes:
 
 ```text
 ModernTotalPaxKcmHourlyCheckpointPdfplumberParser
+HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser
+HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
+HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
+HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
 ```
 
 Layout family:
@@ -192,6 +200,15 @@ Total Pax + KCM PAX
 It uses `pdfplumber` line-based table extraction, maps the blank fourth header
 column to `airport_name`, forward-fills date/hour/airport context fields, and
 does not forward-fill `checkpoint_name` or `throughput_count`.
+
+The modern parser manifest is currently valid from week ending `2025-12-27`.
+The historical parser manifest is valid from week ending `2023-01-07` through
+`2025-12-20`. The strict historical parser manifest is valid from week ending
+`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest is valid
+for week ending `2022-04-02`. The March 2022 historical parser manifest is
+valid from week ending `2022-03-05` through `2022-03-26`. Those boundaries are
+backed by local fixtures and coverage scans; the next local boundary is week
+ending `2022-02-26`.
 
 ## Manifests
 
@@ -298,7 +315,12 @@ Parsing:
 3. CLI output uses the canonical CSV columns from `cli.CANONICAL_COLUMNS`.
 4. `parse-all` processes matching PDFs in deterministic filename order and can
    continue after parser failures when requested.
-5. `parsers coverage` processes downloaded PDFs in reverse chronological order
+5. Historical parser work first ensures a real local PDF corpus exists. Use
+   `tsa-throughput download --from-installed-manifest --output-dir data/raw` to
+   create or update `data/raw` and `data/raw/manifest.json`; if the installed
+   manifest is stale, refresh `data/source_manifest.json` and download with
+   `tsa-throughput download --from-source-manifest data/source_manifest.json --output-dir data/raw`.
+6. `parsers coverage` processes downloaded PDFs in reverse chronological order
    and reports the first parser coverage boundary for historical plugin work.
 
 ## Current Status
@@ -323,6 +345,10 @@ Implemented:
 
 ## Remaining Roadmap
 
+- Use `tsa-throughput download --from-installed-manifest --output-dir data/raw`
+  before parser coverage so `data/raw` contains real TSA PDFs and a runtime
+  manifest. If needed, refresh `data/source_manifest.json` and download with
+  `--from-source-manifest`.
 - Use `tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error`
   to identify the next historical layout boundary, then add a focused parser
   plugin and fixture for that first failure PDF.

@@ -37,6 +37,7 @@ from tsa_throughput.parsing.registry import (
 from tsa_throughput.source_manifest import (
     SourceManifestRefreshResult,
     list_source_reports,
+    load_source_manifest,
     refresh_source_manifest_with_result,
     source_manifest_to_json,
 )
@@ -367,6 +368,13 @@ def _add_download_scope_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Download reports from the installed source manifest.",
     )
+    scope.add_argument(
+        "--from-source-manifest",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Download reports from a refreshed source manifest JSON file.",
+    )
 
 
 def _handle_discover(args: argparse.Namespace) -> int:
@@ -420,6 +428,8 @@ def _discover_reports_for_args(args: argparse.Namespace) -> list[ThroughputRepor
 def _download_reports_for_args(args: argparse.Namespace) -> list[ThroughputReport]:
     if args.from_installed_manifest:
         return list_source_reports()
+    if args.from_source_manifest is not None:
+        return list_source_reports(load_source_manifest(Path(args.from_source_manifest)))
     return _discover_reports_for_args(args)
 
 

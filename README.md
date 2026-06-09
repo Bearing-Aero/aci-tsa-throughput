@@ -224,6 +224,13 @@ Download from the installed source manifest distributed with the package:
 tsa-throughput download --from-installed-manifest --output-dir data/raw
 ```
 
+Download from a refreshed source manifest file:
+
+```bash
+tsa-throughput manifest refresh --output data/source_manifest.json --max-pages 30
+tsa-throughput download --from-source-manifest data/source_manifest.json --output-dir data/raw
+```
+
 Download reports discovered from at most three listing pages:
 
 ```bash
@@ -320,6 +327,7 @@ Scan downloaded PDFs from newest to oldest to identify where installed parser
 coverage stops:
 
 ```bash
+tsa-throughput download --from-installed-manifest --output-dir data/raw
 tsa-throughput parsers coverage --input-dir data/raw
 ```
 
@@ -336,6 +344,29 @@ The coverage scanner reads `manifest.json` when available and falls back to
 canonical filenames like `tsa-throughput-week-ending-YYYY-MM-DD.pdf`. It reports
 the earliest successful week ending date and the first failure, which is the PDF
 to inspect when adding the next historical parser plugin.
+
+Historical parser development requires real local TSA PDFs. Before coverage
+scanning, make sure `data/raw` exists and contains downloaded PDFs plus
+`data/raw/manifest.json`. Start with the installed manifest:
+
+```bash
+tsa-throughput download --from-installed-manifest --output-dir data/raw
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error --max-pages 3
+```
+
+If the installed manifest is stale or incomplete, refresh a development source
+manifest first and then download from it:
+
+```bash
+tsa-throughput manifest refresh --output data/source_manifest.json --max-pages 30
+tsa-throughput download --from-source-manifest data/source_manifest.json --output-dir data/raw
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error --max-pages 3
+```
+
+The downloader is idempotent and uses `data/raw/manifest.json` to skip existing
+files on repeated runs unless `--overwrite` is supplied. These live download
+commands are manual development workflow steps; default tests continue to use
+fixtures and injected fetchers.
 
 ## Python Usage
 
@@ -525,7 +556,9 @@ It stores known TSA report metadata:
 - Alternate URLs.
 
 Use `tsa-throughput download --from-installed-manifest` when you want to download
-from this packaged catalog instead of scraping the live listing first.
+from this packaged catalog instead of scraping the live listing first. Use
+`tsa-throughput download --from-source-manifest path/to/source_manifest.json`
+when parser development needs a freshly discovered source manifest.
 
 The installed source manifest is a known catalog of TSA FOIA report links, not a
 guarantee that the live TSA site is reachable or that every linked PDF is
@@ -558,13 +591,17 @@ Each parser provides:
 - `can_parse(report, pdf_path)`
 - `parse(source_file, max_pages=None, report=None)`
 
-The current installed parser is:
+The current installed parsers are:
 
 ```text
 modern_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
+historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
-It supports the modern hourly checkpoint layout with these columns:
+Most supported reports use the hourly checkpoint layout with these columns:
 
 ```text
 Date
@@ -577,14 +614,28 @@ Checkpoint
 Total Pax + KCM PAX
 ```
 
-The parser uses `pdfplumber` line-based table extraction and emits the canonical
+The parsers use `pdfplumber` line-based table extraction and emit the canonical
 CSV schema above. It forward-fills repeated date, hour, airport code, airport
 name, city, and state values. It does not forward-fill checkpoint names or
 throughput counts.
 
+The modern parser manifest is valid from week ending `2025-12-27`, backed by
+the verified `tests/fixtures/tsa-throughput-week-ending-2025-12-27.pdf`
+fixture. The historical parser manifest is valid from week ending `2023-01-07`
+through `2025-12-20`, backed by representative fixtures at both ends of that
+range. The strict historical parser manifest is valid from week ending
+`2022-04-09` through `2022-12-31`; it uses stricter pdfplumber line extraction
+for the same `Total Pax + KCM PAX` columns. The PMIS historical parser manifest
+is valid for week ending `2022-04-02`; it uses the
+`PMIS - Total Customer Throughput (Unadjusted)` source column. The March 2022
+historical parser manifest is valid from week ending `2022-03-05` through
+`2022-03-26` for the earlier 8-column `Total Pax + KCM PAX` layout. The next
+local historical boundary found by coverage is week ending `2022-02-26`.
+
 Current limitations:
 
-- Only the modern `Total Pax + KCM PAX` hourly checkpoint layout is implemented.
+- Only the `Total Pax + KCM PAX` layout families and one PMIS hourly checkpoint
+  layout are implemented.
 - Historical layouts must be added as separate parser plugins.
 - Parser manifest date ranges should be treated as conservative hints, not proof
   of universal coverage.

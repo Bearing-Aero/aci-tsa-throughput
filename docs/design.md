@@ -211,6 +211,13 @@ The CLI uses this manifest for:
 tsa-throughput download --from-installed-manifest --output-dir data/raw
 ```
 
+A refreshed development source manifest can also be used as the download source:
+
+```bash
+tsa-throughput manifest refresh --output data/source_manifest.json --max-pages 30
+tsa-throughput download --from-source-manifest data/source_manifest.json --output-dir data/raw
+```
+
 The installed manifest is a known catalog of discovered TSA FOIA links, not a
 guarantee that the live TSA site or every linked PDF is currently available.
 
@@ -361,16 +368,24 @@ class ThroughputParser(ABC):
     def parse(self, source_file: Path, *, max_pages=None, report=None) -> ParseResult: ...
 ```
 
-Current plugin:
+Current plugins:
 
 ```text
 modern_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_pdfplumber
+historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
+historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
-Class:
+Classes:
 
 ```text
 ModernTotalPaxKcmHourlyCheckpointPdfplumberParser
+HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser
+HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
+HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
+HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
 ```
 
 Supported layout:
@@ -390,6 +405,15 @@ The plugin uses `pdfplumber`, validates the modern header, forward-fills
 date/hour/airport context fields, parses counts as integers, and raises
 `ParseError` rather than guessing through unfamiliar tables.
 
+The modern parser manifest is valid from week ending `2025-12-27`. The
+historical parser manifest is valid from week ending `2023-01-07` through
+`2025-12-20`. The strict historical parser manifest is valid from week ending
+`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest is valid
+for week ending `2022-04-02`. The March 2022 historical parser manifest is
+valid from week ending `2022-03-05` through `2022-03-26`. The next local
+coverage boundary is week ending `2022-02-26`; inspection shows a 9-column PMIS
+table that should be reviewed before extending support further.
+
 ## CLI Commands
 
 The CLI lives in `src/tsa_throughput/cli.py`.
@@ -398,12 +422,13 @@ Implemented commands:
 
 ```bash
 tsa-throughput discover [--latest | --all | --max-pages N] [--format text|json]
-tsa-throughput download [--latest | --all | --max-pages N | --from-installed-manifest] --output-dir DIR [--overwrite]
+tsa-throughput download [--latest | --all | --max-pages N | --from-installed-manifest | --from-source-manifest JSON] --output-dir DIR [--overwrite]
 tsa-throughput manifest refresh --output JSON [--max-pages N] [--dry-run] [--format text|json]
 tsa-throughput parse PDF --output CSV [--max-pages N] [--parser NAME]
 tsa-throughput parse-all --input-dir DIR --output CSV [--pattern GLOB] [--max-pages N] [--parser NAME] [--continue-on-error]
 tsa-throughput parsers list
 tsa-throughput parsers match --week-ending YYYY-MM-DD [--pdf-path PDF]
+tsa-throughput parsers coverage --input-dir DIR [--pattern GLOB] [--max-pages N] [--stop-on-first-error] [--format text|json]
 ```
 
 All commands that call package code support `--debug` for tracebacks.

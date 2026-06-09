@@ -14,6 +14,9 @@ from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfpl
 )
 
 FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf")
+HISTORICAL_MODERN_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2025-12-27.pdf"
+)
 
 
 def test_modern_parser_can_parse_first_five_pages() -> None:
@@ -44,6 +47,45 @@ def test_modern_parser_first_record_matches_expected_values() -> None:
     assert first_record.metric_source_column == METRIC_SOURCE_COLUMN
     assert first_record.parser_name == PARSER_NAME
     assert first_record.parse_confidence == PARSE_CONFIDENCE
+
+
+def test_modern_parser_parses_verified_2025_boundary_fixture() -> None:
+    parser = ModernTotalPaxKcmHourlyCheckpointPdfplumberParser()
+
+    result = parser.parse(HISTORICAL_MODERN_FIXTURE_PDF, max_pages=3)
+    first_record = result.records[0]
+
+    assert result.record_count > 0
+    assert first_record.throughput_date == date(2025, 12, 21)
+    assert first_record.hour == time(0, 0)
+    assert first_record.airport_code == "ANC"
+    assert first_record.airport_name == "Ted Stevens Anchorage International"
+    assert first_record.city == "Anchorage"
+    assert first_record.state == "AK"
+    assert first_record.checkpoint_name == "South Checkpoint"
+    assert first_record.throughput_count == 288
+    assert first_record.metric_name == METRIC_NAME
+    assert first_record.metric_source_column == METRIC_SOURCE_COLUMN
+    assert first_record.parser_name == PARSER_NAME
+    assert first_record.parse_confidence == PARSE_CONFIDENCE
+
+
+def test_modern_parser_forward_fills_verified_2025_boundary_fixture() -> None:
+    parser = ModernTotalPaxKcmHourlyCheckpointPdfplumberParser()
+
+    result = parser.parse(HISTORICAL_MODERN_FIXTURE_PDF, max_pages=3)
+    atl_main = next(
+        record
+        for record in result.records
+        if record.airport_code == "ATL" and record.checkpoint_name == "Main Checkpoint"
+    )
+
+    assert atl_main.throughput_date == date(2025, 12, 21)
+    assert atl_main.hour == time(0, 0)
+    assert atl_main.airport_name == "Hartsfield - Jackson Atlanta International"
+    assert atl_main.city == "Atlanta"
+    assert atl_main.state == "GA"
+    assert atl_main.throughput_count == 88
 
 
 def test_modern_parser_forward_fills_atl_metadata() -> None:

@@ -2,6 +2,7 @@ import json
 import shutil
 import socket
 from datetime import date
+from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -23,11 +24,47 @@ from tsa_throughput.parsing.coverage import (
     STATUS_PARSED,
     scan_parser_coverage,
 )
+from tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber import (
+    PARSER_NAME as HISTORICAL_PARSER_NAME,
+)
 from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
-    PARSER_NAME,
+    PARSER_NAME as MODERN_PARSER_NAME,
 )
 
+STRICT_HISTORICAL_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber"
+).PARSER_NAME
+PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
+).PARSER_NAME
+MARCH_2022_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
+).PARSER_NAME
+
 FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf")
+HISTORICAL_MODERN_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2025-12-27.pdf"
+)
+HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2025-12-20.pdf"
+)
+HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2023-01-07.pdf"
+)
+STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-12-31.pdf"
+)
+STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-04-09.pdf"
+)
+PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-04-02.pdf")
+MARCH_2022_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf")
+MARCH_2022_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf"
+)
 
 
 def test_coverage_scan_finds_pdf_files_under_input_directory(
@@ -159,8 +196,223 @@ def test_coverage_scan_records_success_parser_name_and_record_count(
 
     assert result.success_count == 1
     assert result.results[0].status == STATUS_PARSED
-    assert result.results[0].parser_name == PARSER_NAME
+    assert result.results[0].parser_name == MODERN_PARSER_NAME
     assert result.results[0].record_count
+
+
+def test_coverage_scan_extends_through_verified_2025_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 2
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2025, 12, 27)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_historical_total_pax_kcm_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 4
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2023, 1, 7)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_strict_historical_total_pax_kcm_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-12-31.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-09.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 6
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2022, 4, 9)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_historical_pmis_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-12-31.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-09.pdf",
+    )
+    shutil.copyfile(
+        PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-02.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 7
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2022, 4, 2)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        PMIS_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_march_2022_historical_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-12-31.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-09.pdf",
+    )
+    shutil.copyfile(
+        PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-02.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-26.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-05.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 9
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2022, 3, 5)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+    ]
 
 
 def test_coverage_scan_records_parser_registry_miss(

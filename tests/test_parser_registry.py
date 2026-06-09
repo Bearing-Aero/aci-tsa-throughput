@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from importlib import import_module
 from pathlib import Path
 from typing import ClassVar
 
@@ -8,8 +9,16 @@ import pytest
 from tsa_throughput.exceptions import ParserNotFoundError
 from tsa_throughput.models import ParseResult, ThroughputReport
 from tsa_throughput.parsing.base import ThroughputParser
+from tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber import (
+    PARSER_NAME as HISTORICAL_PARSER_NAME,
+)
+from tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber import (
+    HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser,
+)
 from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
-    PARSER_NAME,
+    PARSER_NAME as MODERN_PARSER_NAME,
+)
+from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
     ModernTotalPaxKcmHourlyCheckpointPdfplumberParser,
 )
 from tsa_throughput.parsing.registry import (
@@ -20,6 +29,39 @@ from tsa_throughput.parsing.registry import (
 )
 
 FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf")
+HISTORICAL_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2025-12-20.pdf")
+STRICT_HISTORICAL_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-12-31.pdf"
+)
+PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-04-02.pdf")
+MARCH_2022_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf")
+MARCH_2022_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf"
+)
+strict_parser = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber"
+)
+STRICT_HISTORICAL_PARSER_NAME = strict_parser.PARSER_NAME
+StrictHistoricalParser = (
+    strict_parser.HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
+)
+pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
+)
+PMIS_PARSER_NAME = pmis_parser.PARSER_NAME
+PmisParser = (
+    pmis_parser.HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
+)
+march_2022_parser = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
+)
+MARCH_2022_PARSER_NAME = march_2022_parser.PARSER_NAME
+March2022Parser = (
+    march_2022_parser.HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
+)
 
 
 class LowPriorityTestParser(ThroughputParser):
@@ -107,25 +149,105 @@ def test_parser_manifest_loads_successfully() -> None:
     assert isinstance(manifest["parsers"], list)
 
 
-def test_parser_manifest_contains_modern_parser_entry() -> None:
+def test_parser_manifest_contains_registered_parser_entries() -> None:
     manifest = load_parser_manifest()
 
     parser_names = {entry["name"] for entry in manifest["parsers"]}
 
-    assert PARSER_NAME in parser_names
+    assert MODERN_PARSER_NAME in parser_names
+    assert HISTORICAL_PARSER_NAME in parser_names
+    assert STRICT_HISTORICAL_PARSER_NAME in parser_names
+    assert PMIS_PARSER_NAME in parser_names
+    assert MARCH_2022_PARSER_NAME in parser_names
 
 
 def test_list_parsers_returns_modern_parser_metadata() -> None:
     parsers = list_parsers()
-    modern_parser = next(entry for entry in parsers if entry.name == PARSER_NAME)
+    modern_parser = next(entry for entry in parsers if entry.name == MODERN_PARSER_NAME)
 
     assert isinstance(modern_parser, ParserManifestEntry)
     assert modern_parser.module.endswith("modern_total_pax_kcm_hourly_checkpoint_pdfplumber")
     assert modern_parser.class_name == "ModernTotalPaxKcmHourlyCheckpointPdfplumberParser"
-    assert modern_parser.valid_from == date(2026, 1, 1)
+    assert modern_parser.valid_from == date(2025, 12, 27)
     assert modern_parser.valid_to is None
     assert modern_parser.priority == 100
     assert modern_parser.layout_family == "hourly_checkpoint_total_pax_kcm"
+
+
+def test_list_parsers_returns_historical_parser_metadata() -> None:
+    parsers = list_parsers()
+    historical_parser = next(
+        entry for entry in parsers if entry.name == HISTORICAL_PARSER_NAME
+    )
+
+    assert isinstance(historical_parser, ParserManifestEntry)
+    assert historical_parser.module.endswith(
+        "historical_total_pax_kcm_hourly_checkpoint_pdfplumber"
+    )
+    assert historical_parser.class_name == (
+        "HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser"
+    )
+    assert historical_parser.valid_from == date(2023, 1, 7)
+    assert historical_parser.valid_to == date(2025, 12, 20)
+    assert historical_parser.priority == 90
+    assert historical_parser.layout_family == "hourly_checkpoint_total_pax_kcm"
+
+
+def test_list_parsers_returns_strict_historical_parser_metadata() -> None:
+    parsers = list_parsers()
+    strict_parser = next(
+        entry for entry in parsers if entry.name == STRICT_HISTORICAL_PARSER_NAME
+    )
+
+    assert isinstance(strict_parser, ParserManifestEntry)
+    assert strict_parser.module.endswith(
+        "historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber"
+    )
+    assert strict_parser.class_name == (
+        "HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser"
+    )
+    assert strict_parser.valid_from == date(2022, 4, 9)
+    assert strict_parser.valid_to == date(2022, 12, 31)
+    assert strict_parser.priority == 90
+    assert strict_parser.layout_family == "hourly_checkpoint_total_pax_kcm_strict_lines"
+
+
+def test_list_parsers_returns_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    pmis_parser = next(entry for entry in parsers if entry.name == PMIS_PARSER_NAME)
+
+    assert isinstance(pmis_parser, ParserManifestEntry)
+    assert pmis_parser.module.endswith(
+        "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
+    )
+    assert pmis_parser.class_name == (
+        "HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser"
+    )
+    assert pmis_parser.valid_from == date(2022, 4, 2)
+    assert pmis_parser.valid_to == date(2022, 4, 2)
+    assert pmis_parser.priority == 90
+    assert pmis_parser.layout_family == "hourly_checkpoint_pmis_total_customer_throughput"
+
+
+def test_list_parsers_returns_march_2022_parser_metadata() -> None:
+    parsers = list_parsers()
+    march_2022_parser = next(
+        entry for entry in parsers if entry.name == MARCH_2022_PARSER_NAME
+    )
+
+    assert isinstance(march_2022_parser, ParserManifestEntry)
+    assert march_2022_parser.module.endswith(
+        "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
+    )
+    assert march_2022_parser.class_name == (
+        "HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser"
+    )
+    assert march_2022_parser.valid_from == date(2022, 3, 5)
+    assert march_2022_parser.valid_to == date(2022, 3, 26)
+    assert march_2022_parser.priority == 90
+    assert march_2022_parser.layout_family == (
+        "hourly_checkpoint_total_pax_kcm_march_2022"
+    )
 
 
 def test_get_parser_selects_modern_parser_for_matching_week_end() -> None:
@@ -139,15 +261,103 @@ def test_get_parser_selects_modern_parser_for_matching_week_end() -> None:
     assert isinstance(parser, ModernTotalPaxKcmHourlyCheckpointPdfplumberParser)
 
 
+def test_get_parser_selects_modern_parser_for_verified_2025_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2025, 12, 27),
+    )
+
+    parser = get_parser(report, FIXTURE_PDF)
+
+    assert isinstance(parser, ModernTotalPaxKcmHourlyCheckpointPdfplumberParser)
+
+
 def test_get_parser_supports_exact_parser_override_by_name() -> None:
     report = ThroughputReport(
         source_url="https://www.tsa.gov/example.pdf",
         week_end=date(2026, 6, 6),
     )
 
-    parser = get_parser(report, FIXTURE_PDF, parser_name=PARSER_NAME)
+    parser = get_parser(report, FIXTURE_PDF, parser_name=MODERN_PARSER_NAME)
 
-    assert parser.parser_name == PARSER_NAME
+    assert parser.parser_name == MODERN_PARSER_NAME
+
+
+def test_get_parser_selects_historical_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2025, 12, 20),
+    )
+
+    parser = get_parser(report, HISTORICAL_FIXTURE_PDF)
+
+    assert isinstance(parser, HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser)
+
+
+def test_get_parser_selects_historical_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2023, 1, 7),
+    )
+
+    parser = get_parser(report, HISTORICAL_FIXTURE_PDF)
+
+    assert isinstance(parser, HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser)
+
+
+def test_get_parser_selects_strict_historical_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2022, 12, 31),
+    )
+
+    parser = get_parser(report, STRICT_HISTORICAL_FIXTURE_PDF)
+
+    assert isinstance(parser, StrictHistoricalParser)
+
+
+def test_get_parser_selects_strict_historical_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2022, 4, 9),
+    )
+
+    parser = get_parser(report, STRICT_HISTORICAL_FIXTURE_PDF)
+
+    assert isinstance(parser, StrictHistoricalParser)
+
+
+def test_get_parser_selects_pmis_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2022, 4, 2),
+    )
+
+    parser = get_parser(report, PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, PmisParser)
+
+
+def test_get_parser_selects_march_2022_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2022, 3, 26),
+    )
+
+    parser = get_parser(report, MARCH_2022_FIXTURE_PDF)
+
+    assert isinstance(parser, March2022Parser)
+
+
+def test_get_parser_selects_march_2022_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2022, 3, 5),
+    )
+
+    parser = get_parser(report, MARCH_2022_BOUNDARY_FIXTURE_PDF)
+
+    assert isinstance(parser, March2022Parser)
 
 
 def test_get_parser_raises_for_unknown_parser_override() -> None:
@@ -160,7 +370,7 @@ def test_get_parser_raises_for_unknown_parser_override() -> None:
 def test_get_parser_raises_when_no_parser_date_range_matches() -> None:
     report = ThroughputReport(
         source_url="https://www.tsa.gov/example.pdf",
-        week_end=date(2025, 12, 31),
+        week_end=date(2022, 2, 26),
     )
 
     with pytest.raises(ParserNotFoundError, match="no parser found"):

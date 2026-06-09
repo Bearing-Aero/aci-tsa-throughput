@@ -3,6 +3,7 @@ import json
 import socket
 from collections.abc import Callable
 from datetime import date
+from importlib import import_module
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,9 @@ from tsa_throughput.cli import CANONICAL_COLUMNS, main
 from tsa_throughput.discovery import TSA_READING_ROOM_URL, discover_report_links
 from tsa_throughput.download import download_missing_reports
 from tsa_throughput.models import SourceManifest, ThroughputReport
+from tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber import (
+    PARSER_NAME as HISTORICAL_PARSER_NAME,
+)
 from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
     PARSER_NAME,
 )
@@ -31,6 +35,18 @@ MODERN_CANONICAL_ID = "tsa-throughput-week-ending-2026-06-06"
 NEWER_CANONICAL_ID = "tsa-throughput-week-ending-2026-06-13"
 PDF_BYTES = b"%PDF-1.7\ncli report bytes\n%%EOF\n"
 UPDATED_PDF_BYTES = b"%PDF-1.7\ncli updated report bytes\n%%EOF\n"
+STRICT_HISTORICAL_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber"
+).PARSER_NAME
+PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
+).PARSER_NAME
+MARCH_2022_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
+).PARSER_NAME
 
 
 def test_discover_latest_command_exits_successfully_with_fixture_discovery(
@@ -155,6 +171,34 @@ def test_download_from_installed_manifest_uses_manifest_reports(
 
     assert exit_code == 0
     assert (output_dir / (_report().canonical_filename or "")).read_bytes() == PDF_BYTES
+
+
+def test_download_from_source_manifest_uses_manifest_file(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source_manifest_path = tmp_path / "source_manifest.json"
+    save_source_manifest(_source_manifest(), source_manifest_path)
+    _patch_cli_downloader(monkeypatch, PDF_BYTES)
+    output_dir = tmp_path / "raw"
+
+    exit_code = main(
+        [
+            "download",
+            "--from-source-manifest",
+            str(source_manifest_path),
+            "--output-dir",
+            str(output_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (output_dir / "tsa-throughput-week-ending-2026-06-13.pdf").read_bytes() == (
+        PDF_BYTES
+    )
+    assert (output_dir / "tsa-throughput-week-ending-2026-06-06.pdf").read_bytes() == (
+        PDF_BYTES
+    )
 
 
 def test_download_writes_pdf_files_under_output_directory(
@@ -511,6 +555,10 @@ def test_parsers_list_output_includes_modern_parser_metadata(capsys) -> None:
     assert exit_code == 0
     captured = capsys.readouterr()
     assert PARSER_NAME in captured.out
+    assert HISTORICAL_PARSER_NAME in captured.out
+    assert STRICT_HISTORICAL_PARSER_NAME in captured.out
+    assert PMIS_PARSER_NAME in captured.out
+    assert MARCH_2022_PARSER_NAME in captured.out
     assert "hourly_checkpoint_total_pax_kcm" in captured.out
 
 
@@ -523,11 +571,43 @@ def test_parsers_match_command_exits_successfully(capsys) -> None:
 
 
 def test_parsers_match_outside_coverage_exits_nonzero(capsys) -> None:
-    exit_code = main(["parsers", "match", "--week-ending", "2025-12-31"])
+    exit_code = main(["parsers", "match", "--week-ending", "2022-02-26"])
 
     assert exit_code != 0
     captured = capsys.readouterr()
     assert "no parser found" in captured.err
+
+
+def test_parsers_match_selects_historical_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2025-12-20"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert HISTORICAL_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_strict_historical_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2022-12-31"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert STRICT_HISTORICAL_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2022-04-02"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_march_2022_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2022-03-26"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert MARCH_2022_PARSER_NAME in captured.out
 
 
 def test_parsers_match_with_pdf_path_exits_successfully(capsys) -> None:

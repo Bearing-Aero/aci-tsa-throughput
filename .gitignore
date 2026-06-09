@@ -3,6 +3,9 @@ inspection_2026/
 ./*.pdf
 .DS_Store
 
+# Local downloaded TSA report corpus
+data/**/*.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

@@ -2,10 +2,50 @@
   "schema_version": 1,
   "parsers": [
     {
+      "name": "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "class": "HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser",
+      "valid_from": "2022-03-05",
+      "valid_to": "2022-03-26",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_total_pax_kcm_march_2022",
+      "description": "Parser for historical TSA throughput reports with March 2022 Total Pax + KCM PAX hourly checkpoint tables."
+    },
+    {
+      "name": "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber",
+      "class": "HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser",
+      "valid_from": "2022-04-02",
+      "valid_to": "2022-04-02",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables."
+    },
+    {
+      "name": "historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber",
+      "class": "HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser",
+      "valid_from": "2022-04-09",
+      "valid_to": "2022-12-31",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_total_pax_kcm_strict_lines",
+      "description": "Parser for historical TSA throughput reports with Total Pax + KCM PAX tables that require strict line extraction."
+    },
+    {
+      "name": "historical_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "class": "HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser",
+      "valid_from": "2023-01-07",
+      "valid_to": "2025-12-20",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_total_pax_kcm",
+      "description": "Parser for historical TSA throughput reports with hourly airport/checkpoint Total Pax + KCM PAX tables."
+    },
+    {
       "name": "modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
       "module": "tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
       "class": "ModernTotalPaxKcmHourlyCheckpointPdfplumberParser",
-      "valid_from": "2026-01-01",
+      "valid_from": "2025-12-27",
       "valid_to": null,
       "priority": 100,
       "layout_family": "hourly_checkpoint_total_pax_kcm",
