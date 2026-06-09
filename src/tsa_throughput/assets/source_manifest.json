@@ -1,1 +1,22 @@
-{}
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-08T00:00:00Z",
+  "source": {
+    "name": "TSA FOIA Reading Room",
+    "listing_url": "https://www.tsa.gov/foia/readingroom?title=&field_foia_tax_category_target_id=1132&page=0"
+  },
+  "reports": [
+    {
+      "canonical_id": "tsa-throughput-week-ending-2026-06-06",
+      "week_start": "2026-05-31",
+      "week_end": "2026-06-06",
+      "title": "TSA Throughput Data to May 31, 2026 to June 6, 2026",
+      "source_url": "https://www.tsa.gov/sites/default/files/foia-readingroom/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf",
+      "source_filename": "tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf",
+      "canonical_filename": "tsa-throughput-week-ending-2026-06-06.pdf",
+      "date_confidence": "title_url_match",
+      "listing_url": "https://www.tsa.gov/foia/readingroom?title=&field_foia_tax_category_target_id=1132&page=0",
+      "alternate_urls": []
+    }
+  ]
+}

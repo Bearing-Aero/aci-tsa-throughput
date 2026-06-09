@@ -90,6 +90,17 @@ class RuntimeManifest:
     reports: list[RuntimeManifestEntry] = field(default_factory=list)
 
 
+@dataclass(frozen=True, slots=True)
+class SourceManifest:
+    """Installed catalog of known TSA source report metadata."""
+
+    schema_version: int
+    generated_at: str
+    source_name: str
+    source_listing_url: str
+    reports: list[ThroughputReport] = field(default_factory=list)
+
+
 @dataclass(slots=True)
 class ThroughputRecord:
     """Canonical parsed TSA throughput record."""
