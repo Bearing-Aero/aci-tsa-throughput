@@ -6,6 +6,7 @@ from tsa_throughput.exceptions import (
     PaginationError,
     ParseError,
     ParserNotFoundError,
+    StorageError,
     TSAThroughputError,
     TSAThroughputHTTPError,
 )
@@ -19,6 +20,7 @@ def test_custom_exceptions_inherit_from_base_error() -> None:
         NormalizationError,
         DownloadError,
         ManifestError,
+        StorageError,
         ParserNotFoundError,
         ParseError,
     ]
@@ -29,4 +31,3 @@ def test_custom_exceptions_inherit_from_base_error() -> None:
 
 def test_pagination_error_inherits_from_discovery_error() -> None:
     assert issubclass(PaginationError, DiscoveryError)
-

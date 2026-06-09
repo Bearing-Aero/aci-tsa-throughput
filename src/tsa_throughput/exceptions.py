@@ -29,10 +29,13 @@ class ManifestError(TSAThroughputError):
     """Raised when manifest loading or writing fails."""
 
 
+class StorageError(TSAThroughputError):
+    """Raised when local storage operations fail."""
+
+
 class ParserNotFoundError(TSAThroughputError):
     """Raised when no parser can be selected for a report."""
 
 
 class ParseError(TSAThroughputError):
     """Raised when parsing a report fails."""
-
