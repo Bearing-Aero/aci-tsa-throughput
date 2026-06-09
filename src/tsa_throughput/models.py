@@ -62,6 +62,15 @@ class DownloadResult:
     path: Path | None = None
     sha256: str | None = None
     size_bytes: int | None = None
+    bytes: int | None = None
+    message: str | None = None
+
+    def __post_init__(self) -> None:
+        """Keep legacy and canonical byte-size field names in sync."""
+        if self.size_bytes is None and self.bytes is not None:
+            self.size_bytes = self.bytes
+        if self.bytes is None and self.size_bytes is not None:
+            self.bytes = self.size_bytes
 
 
 @dataclass(frozen=True, slots=True)
