@@ -2,13 +2,11 @@
 
 ## Project
 
-This repository contains `tsa-throughput`, a reusable Python library and command-line tool for discovering, downloading, tracking, and parsing TSA public FOIA checkpoint throughput PDF reports.
+`tsa-throughput` is a Python library and CLI for discovering, downloading,
+tracking, and parsing TSA public FOIA checkpoint throughput PDF reports.
 
-The project is intended to support analytics pipelines, scheduled jobs, research workflows, airport data products, and local scripts that need structured TSA checkpoint throughput data.
-
-This project is being developed in conjunction with ACI North America's Data Analytics Working Group (DAWG) to support broader access to and analysis of TSA throughput data.
-
-## Package and CLI Names
+It is being developed in conjunction with ACI North America's Data Analytics
+Working Group (DAWG) to support broader access to TSA throughput data.
 
 Package/import name:
 
@@ -16,19 +14,13 @@ Package/import name:
 tsa_throughput
 ```
 
-Distribution / project name:
+Distribution and CLI name:
 
 ```text
 tsa-throughput
 ```
 
-CLI command:
-
-```text
-tsa-throughput
-```
-
-Author contacts:
+Primary contact:
 
 ```text
 joel@bearing.aero
@@ -36,189 +28,124 @@ joel@bearing.aero
 
 ## Development Environment
 
-Assume development is performed using Conda or Miniconda.
-
-Create and activate a development environment:
+Use the existing Conda environment:
 
 ```bash
-conda create -n tsa-throughput python=3.10
-conda activate tsa-throughput
+conda activate bearing-tsa
 pip install -e ".[dev]"
 ```
 
-If using an existing environment:
+If it must be recreated:
 
 ```bash
-conda activate tsa-throughput
+conda create -n bearing-tsa python=3.10
+conda activate bearing-tsa
 pip install -e ".[dev]"
 ```
 
-Run tests:
+Python support is `>=3.10`.
+
+Common commands:
 
 ```bash
 pytest
-```
-
-Run linting:
-
-```bash
 ruff check .
-```
-
-Build package:
-
-```bash
 python -m build
 ```
 
-## Python Version
+Default tests must not require live network access.
 
-Support:
-
-```text
-Python >= 3.10
-```
-
-## Core Design Principles
-
-Build a reusable library first and a CLI second.
-
-The core package should not assume it is being run from a terminal, Lambda, notebook, cron job, or GitHub Action. Those should be thin wrappers around reusable library functions.
-
-Keep responsibilities separated:
-
-* HTTP fetching
-* FOIA listing discovery
-* PDF link extraction
-* report metadata normalization
-* download behavior
-* storage
-* manifests
-* PDF parsing
-* parser plugin registration
-* CLI orchestration
-
-Avoid one large end-to-end scraper function.
-
-Prefer small, typed, testable modules.
-
-Use boring, maintainable Python.
-
-## Project Structure
-
-Target structure:
+## Implemented Package Layout
 
 ```text
-tsa-throughput/
-  pyproject.toml
-  README.md
-  LICENSE
-  CHANGELOG.md
-  CODEX.md
-  docs/
-    design.md
-    current_plugin_notes.md
-  src/
-    tsa_throughput/
-      __init__.py
-      assets/
-        source_manifest.json
-        parser_manifest.json
-      client.py
-      discovery.py
-      normalization.py
-      download.py
-      storage.py
-      manifest.py
-      models.py
-      exceptions.py
-      logging.py
-      cli.py
-      parsing/
-        __init__.py
-        base.py
-        registry.py
-        plugins/
-          __init__.py
-          modern_total_pax_kcm_hourly_checkpoint_pdfplumber.py
-  tests/
-    fixtures/
-      tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf
-      pdfplumber_inspection_summary.json
-    test_models.py
-    test_modern_parser.py
-    test_parser_registry.py
-    test_cli.py
+src/tsa_throughput/
+  __init__.py
+  client.py
+  cli.py
+  discovery.py
+  download.py
+  exceptions.py
+  logging.py
+  manifest.py
+  models.py
+  normalization.py
+  source_manifest.py
+  storage.py
+  assets/
+    parser_manifest.json
+    source_manifest.json
+  parsing/
+    base.py
+    batch.py
+    registry.py
+    plugins/
+      modern_total_pax_kcm_hourly_checkpoint_pdfplumber.py
 ```
 
-## Implementation Priority
+Core models in `models.py`:
 
-Build in this order:
+- `RawReportLink`
+- `ThroughputReport`
+- `DownloadResult`
+- `RuntimeManifestEntry`
+- `RuntimeManifest`
+- `SourceManifest`
+- `ThroughputRecord`
+- `ParseResult`
 
-1. Package skeleton and dataclass models.
-2. Package-specific exceptions.
-3. Modern PDF parser plugin.
-4. Parser registry and parser manifest.
-5. CLI parse command.
-6. Local filesystem storage.
-7. Runtime download manifest.
-8. TSA listing discovery from saved fixtures.
-9. Report metadata normalization.
-10. Idempotent downloader.
-11. Installed source manifest refresh.
-12. Historical parser plugins only as needed.
+Package-specific exceptions live in `exceptions.py`, including discovery,
+normalization, download, storage, manifest, parser selection, and parse errors.
 
-Do not start by building the whole scraper end-to-end.
+## Implemented CLI
 
-## Current Priority
+Implemented command families:
 
-The first major implementation target is the modern TSA PDF parser.
-
-The recent TSA PDF layout has this table structure:
-
-```text
-Date
-Hour of Day
-Airport
-[airport name]
-City
-State
-Checkpoint
-Total Pax + KCM PAX
+```bash
+tsa-throughput discover
+tsa-throughput download
+tsa-throughput parse
+tsa-throughput parse-all
+tsa-throughput parsers list
+tsa-throughput parsers match --week-ending 2026-06-06
 ```
 
-The blank fourth header column is the airport name column.
+Important options:
 
-The parser should use `pdfplumber` with line-based table extraction.
+- `discover`: `--latest`, `--all`, `--max-pages`, `--format text|json`, `--debug`
+- `download`: `--latest`, `--all`, `--max-pages`, `--from-installed-manifest`,
+  `--output-dir`, `--overwrite`, `--debug`
+- `parse`: positional PDF path, `--output`, `--max-pages`, `--parser`, `--debug`
+- `parse-all`: `--input-dir`, `--output`, `--pattern`, `--max-pages`,
+  `--parser`, `--continue-on-error`, `--debug`
+- `parsers match`: `--week-ending`, optional `--pdf-path`, `--debug`
 
-Recommended table settings:
+There are no implemented `manifest show` or `manifest refresh` CLI commands.
 
-```python
-TABLE_SETTINGS = {
-    "vertical_strategy": "lines",
-    "horizontal_strategy": "lines",
-    "snap_tolerance": 3,
-    "join_tolerance": 3,
-    "intersection_tolerance": 3,
-}
-```
+## Parser Architecture
 
-Observed from inspection:
+Parsers implement `tsa_throughput.parsing.base.ThroughputParser`:
 
-* The recent sample PDF has 987 pages.
-* The first five inspected pages each had one main table.
-* The useful table extraction produced 53 rows and 8 columns per inspected page.
-* `default`, `lines`, and `lines_strict` worked well.
-* `text` and `mixed_vertical_lines_horizontal_text` were worse for the main parser.
+- `parser_name`
+- `parser_version`
+- `layout_family`
+- `can_parse(report, pdf_path)`
+- `parse(source_file, max_pages=None, report=None)`
 
-Use `lines` unless implementation testing suggests otherwise.
+The parser registry in `parsing/registry.py` loads
+`assets/parser_manifest.json`, filters by week ending date when available, sorts
+by priority, imports parser classes, and calls `can_parse()` before selecting a
+parser.
 
-## Modern Parser Rules
-
-Parser name:
+Current installed parser:
 
 ```text
 modern_total_pax_kcm_hourly_checkpoint_pdfplumber
+```
+
+Class:
+
+```text
+ModernTotalPaxKcmHourlyCheckpointPdfplumberParser
 ```
 
 Layout family:
@@ -227,290 +154,40 @@ Layout family:
 hourly_checkpoint_total_pax_kcm
 ```
 
-Metric name:
+It supports the modern hourly checkpoint table with:
 
 ```text
-total_pax_plus_kcm_pax
-```
-
-Metric source column:
-
-```text
+Date
+Hour of Day
+Airport
+[blank airport name column]
+City
+State
+Checkpoint
 Total Pax + KCM PAX
 ```
 
-Column mapping:
+It uses `pdfplumber` line-based table extraction, maps the blank fourth header
+column to `airport_name`, forward-fills date/hour/airport context fields, and
+does not forward-fill `checkpoint_name` or `throughput_count`.
 
-```python
-COLUMN_MAP = {
-    "Date": "throughput_date",
-    "Hour of Day": "hour",
-    "Airport": "airport_code",
-    "": "airport_name",
-    "City": "city",
-    "State": "state",
-    "Checkpoint": "checkpoint_name",
-    "Total Pax + KCM PAX": "throughput_count",
-}
-```
+## Manifests
 
-Forward-fill these fields:
+### Parser Manifest
 
-```text
-throughput_date
-hour
-airport_code
-airport_name
-city
-state
-```
-
-Do not forward-fill:
-
-```text
-checkpoint_name
-throughput_count
-```
-
-The parser should fail clearly if required fields cannot be mapped.
-
-Do not guess through unfamiliar layouts.
-
-## Canonical Parsed Output
-
-Canonical parsed records should support these fields:
-
-```text
-throughput_date
-hour
-airport_code
-airport_name
-city
-state
-checkpoint_name
-metric_name
-metric_source_column
-throughput_count
-week_start
-week_end
-source_file
-source_url
-source_page
-source_table
-parser_name
-parser_version
-parse_confidence
-```
-
-Generally required fields:
-
-```text
-throughput_date
-airport_code
-throughput_count
-source_file
-parser_name
-parser_version
-```
-
-For the modern hourly checkpoint parser, also require:
-
-```text
-hour
-checkpoint_name
-```
-
-## Parser Plugin Architecture
-
-TSA PDF layouts may change over time. Parsing must be plugin-based.
-
-The core library should define:
-
-* parser interface
-* parser registry
-* parser manifest loading
-* canonical parsed record model
-* shared normalization helpers
-* common exceptions
-
-Each parser plugin should define:
-
-* supported layout
-* source column expectations
-* source-to-canonical column mapping
-* required fields
-* optional fields
-* forward-fill fields
-* value normalization
-* `can_parse()` validation
-* conservative failure behavior
-
-Parser metadata belongs in:
+Path:
 
 ```text
 src/tsa_throughput/assets/parser_manifest.json
 ```
 
-Example parser manifest entry:
+Purpose:
 
-```json
-{
-  "name": "modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
-  "module": "tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
-  "class": "ModernTotalPaxKcmHourlyCheckpointPdfplumberParser",
-  "valid_from": "2026-01-01",
-  "valid_to": null,
-  "priority": 100,
-  "layout_family": "hourly_checkpoint_total_pax_kcm",
-  "description": "Parser for modern hourly airport/checkpoint TSA throughput tables with Total Pax + KCM PAX counts."
-}
-```
-
-Date ranges in the parser manifest should be conservative and backed by fixtures.
-
-## Models
-
-Create dataclasses in `src/tsa_throughput/models.py` for:
-
-* `RawReportLink`
-* `ThroughputReport`
-* `DownloadResult`
-* `ThroughputRecord`
-* `ParseResult`
-
-Use `pathlib.Path`, `datetime.date`, and `datetime.time` where appropriate.
-
-Keep models plain and serializable.
-
-## Exceptions
-
-Create package-specific exceptions in `src/tsa_throughput/exceptions.py`.
-
-Suggested exceptions:
-
-```python
-class TSAThroughputError(Exception):
-    pass
-
-class TSAThroughputHTTPError(TSAThroughputError):
-    pass
-
-class DiscoveryError(TSAThroughputError):
-    pass
-
-class PaginationError(DiscoveryError):
-    pass
-
-class NormalizationError(TSAThroughputError):
-    pass
-
-class DownloadError(TSAThroughputError):
-    pass
-
-class ManifestError(TSAThroughputError):
-    pass
-
-class ParserNotFoundError(TSAThroughputError):
-    pass
-
-class ParseError(TSAThroughputError):
-    pass
-```
-
-Library functions should raise package-specific exceptions.
-
-CLI commands should catch package-specific exceptions and exit nonzero with a readable message.
-
-Only show tracebacks with `--debug`.
-
-## Logging Rules
-
-Use the standard `logging` module.
-
-Library modules should use:
-
-```python
-import logging
-
-logger = logging.getLogger(__name__)
-```
-
-Do not configure global logging inside library code.
-
-Do not use `print()` in reusable library code.
-
-The CLI may print user-facing messages.
-
-## Testing Rules
-
-Tests must not make live TSA network calls by default.
-
-Use fixtures under:
-
-```text
-tests/fixtures/
-```
-
-Live tests, if added, must be skipped by default and require:
-
-```bash
-TSA_THROUGHPUT_RUN_LIVE_TESTS=1
-```
-
-Optional live test command:
-
-```bash
-pytest -m integration
-```
-
-Important parser tests for the modern plugin:
-
-* parse first five pages of the sample PDF
-* `record_count > 0`
-* first record is:
-
-  * date `2026-05-31`
-  * hour `00:00`
-  * airport `ANC`
-  * checkpoint `South Checkpoint`
-  * count `208`
-* ATL `Main Checkpoint` appears with count `79`
-* forward-filled ATL metadata is correct
-* `metric_name == "total_pax_plus_kcm_pax"`
-* `metric_source_column == "Total Pax + KCM PAX"`
-* parser fails clearly when the expected header is not found
-
-## Discovery and Download Rules
-
-Discovery and download are not the first implementation priority, but they should follow this design.
-
-The TSA listing URL is:
-
-```text
-https://www.tsa.gov/foia/readingroom?title=&field_foia_tax_category_target_id=1132&page=0
-```
-
-Discovery should:
-
-* start at `page=0`
-* extract PDF links
-* follow pagination until no `Next` link exists
-* support `max_pages`
-* detect suspicious pagination changes
-* not assume listing order is chronological
-
-Downloads should:
-
-* be idempotent
-* write temporary files before final files
-* validate that content appears to be PDF
-* compute SHA-256
-* preserve source URL and original TSA filename
-* update the runtime manifest
-
-## Manifest Rules
-
-There are two manifest concepts.
+- Parser metadata.
+- Import module and class.
+- Valid date range.
+- Priority.
+- Layout family and description.
 
 ### Installed Source Manifest
 
@@ -522,149 +199,101 @@ src/tsa_throughput/assets/source_manifest.json
 
 Purpose:
 
-* known TSA report links
-* report date ranges
-* original source URLs
-* original TSA filenames
-* canonical filenames
-* date confidence
-* alternate URLs
+- Packaged catalog of known TSA FOIA report links.
+- Canonical report IDs and filenames.
+- Week start/end dates.
+- Source URLs and filenames.
+- Date confidence and alternate URLs.
 
-This manifest is committed to git and distributed with the package.
+Use `source_manifest.py` APIs or
+`tsa-throughput download --from-installed-manifest`.
 
 ### Runtime Download Manifest
 
 Default path:
 
 ```text
-<output_dir>/manifest.json
+<output-dir>/manifest.json
 ```
 
 Purpose:
 
-* downloaded reports
-* local filenames
-* checksums
-* source URLs
-* original filenames
-* file sizes
-* download timestamps
+- Local record of downloaded PDFs.
+- SHA-256 checksums.
+- Byte sizes.
+- Download timestamps.
+- Source and canonical filenames.
 
-This makes scheduled jobs safe to rerun.
+`download.py` uses it for idempotent local downloads. `parse-all` reads it when
+available to attach report metadata to parsed records.
 
-## Date Handling
+## Implemented Flow
 
-Store both:
+Discovery:
 
-```text
-week_start
-week_end
-```
+1. `discover_report_links()` fetches TSA FOIA listing pages, extracts PDF links,
+   follows pagination, de-duplicates URLs, and returns `RawReportLink` objects.
+2. `normalize_report_links()` extracts date ranges from titles/URLs, builds
+   canonical IDs and filenames, de-duplicates by canonical report, and sorts
+   newest first.
 
-Canonical report identity should use `week_end`:
+Download:
 
-```text
-tsa-throughput-week-ending-YYYY-MM-DD
-```
+1. `download_missing_reports()` calls `download_report()` for each normalized
+   report.
+2. Downloads are written through `LocalStorage`.
+3. PDF content is validated by header, SHA-256 is computed, and the runtime
+   manifest is updated.
+4. Existing manifest entries and files are skipped unless `overwrite=True`.
 
-Example:
+Parsing:
 
-```text
-tsa-throughput-week-ending-2026-06-06.pdf
-```
+1. `get_parser()` selects a parser from the parser manifest.
+2. The modern plugin parses matching tables into `ThroughputRecord` objects.
+3. CLI output uses the canonical CSV columns from `cli.CANONICAL_COLUMNS`.
+4. `parse-all` processes matching PDFs in deterministic filename order and can
+   continue after parser failures when requested.
 
-If title and URL disagree, mark:
+## Current Status
 
-```text
-date_confidence = "conflict"
-```
+Implemented:
 
-Do not overwrite an existing canonical file automatically when date confidence is `conflict`.
+- Package skeleton, models, and exceptions.
+- Modern TSA PDF parser plugin and tests.
+- Parser manifest and registry.
+- CLI parse command.
+- CLI parser inspection commands.
+- Safe local filesystem storage.
+- Runtime download manifest.
+- FOIA listing discovery.
+- Report metadata normalization.
+- Installed source manifest.
+- Idempotent downloader.
+- Discovery and download CLI commands.
+- Parse-all CLI command.
 
-## CLI Rules
+## Remaining Roadmap
 
-Implement the CLI as a thin wrapper around library functions.
+- Add historical parser plugins as representative fixtures are available.
+- Add source manifest refresh tooling if needed.
+- Broaden parser manifests with conservative valid date ranges backed by tests.
+- Add richer integration tests behind explicit live-network opt-in.
+- Add downstream export/load helpers only after core parsing coverage is stable.
 
-Recommended CLI commands:
+Non-goals for now:
 
-```bash
-tsa-throughput discover
-tsa-throughput discover --all
-tsa-throughput download --latest --output-dir data/raw
-tsa-throughput download --all --output-dir data/raw
-tsa-throughput parse report.pdf --output report.csv
-tsa-throughput parse-all --input-dir data/raw --output throughput.csv
-tsa-throughput manifest show
-tsa-throughput manifest refresh
-tsa-throughput parsers list
-tsa-throughput parsers match --week-ending 2026-06-06
-```
+- Cloud storage backends.
+- Database loading.
+- Hosted API.
+- Dashboard/web application.
+- Silent parsing guesses for unfamiliar PDF layouts.
 
-CSV should be the default parsed output format.
+## Development Notes
 
-## Style Rules
-
-Use:
-
-* type hints
-* dataclasses
-* `pathlib.Path`
-* small functions
-* explicit names
-* package-specific exceptions
-* dependency injection for HTTP and storage where useful
-
-Avoid:
-
-* hidden global state
-* hard-coded output paths
-* silent failures
-* live network calls in tests
-* notebook-style package code
-* unstructured dictionaries as the main API
-* one giant scraper function
-* parsing guesses that silently produce bad data
-
-## Task Size Guidance
-
-Keep implementation tasks narrow.
-
-Good task:
-
-```text
-Implement the modern parser plugin and tests against the provided fixture.
-```
-
-Bad task:
-
-```text
-Build the entire TSA throughput library.
-```
-
-Recommended first Codex tasks:
-
-1. Implement model dataclasses and exceptions.
-2. Implement the modern parser plugin and tests.
-3. Implement parser manifest and registry.
-4. Implement CLI parse command.
-5. Implement local storage and manifests.
-6. Implement discovery from saved listing fixtures.
-7. Implement download behavior.
-
-## Documentation
-
-Keep the full technical design in:
-
-```text
-docs/design.md
-```
-
-Keep current parser notes in:
-
-```text
-docs/current_plugin_notes.md
-```
-
-Keep this file concise enough for Codex to use as operating instructions.
-
-When behavior changes, update the relevant documentation and tests in the same task.
+- Keep library code reusable; the CLI should stay a thin wrapper.
+- Prefer small typed functions and dataclasses over unstructured dictionaries.
+- Use `pathlib.Path`.
+- Raise package-specific exceptions from library modules.
+- Do not configure global logging in library code.
+- Do not add live network requirements to default tests.
+- Update docs and tests in the same task when behavior changes.

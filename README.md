@@ -1,41 +1,47 @@
 # tsa-throughput
 
-`tsa-throughput` is a Python library and command-line tool for discovering, downloading, tracking, and parsing TSA public FOIA checkpoint throughput PDF reports.
+`tsa-throughput` is a Python package and command-line tool for discovering,
+downloading, tracking, and parsing TSA public FOIA checkpoint throughput PDF
+reports.
 
-The package is designed for people who want to use TSA throughput data in analytics pipelines, scheduled jobs, research workflows, airport data products, or local scripts.
+The project is being developed in conjunction with ACI North America's
+Data Analytics Working Group (DAWG) to support broader access to and analysis
+of TSA throughput data.
 
-This project is being developed in conjunction with ACI North America's (ACI-NA) Data Analytics Working Group (DAWG) to support broader access to and analysis of TSA throughput data.
+## What It Does
 
-## What it does
+`tsa-throughput` currently provides:
 
-`tsa-throughput` is intended to:
+- Discovery of TSA throughput PDF links from the public TSA FOIA Reading Room.
+- Normalization of weekly report metadata, including week start and week end dates.
+- A packaged installed source manifest of known report links.
+- Idempotent local PDF downloads with a runtime manifest.
+- Safe local filesystem storage for downloaded reports.
+- A parser manifest and parser registry.
+- A modern TSA PDF parser plugin for hourly checkpoint-level reports.
+- CSV output for parsed throughput records.
+- CLI commands for discovery, download, parsing, batch parsing, and parser inspection.
+- Python APIs for each core step.
 
-* Discover TSA throughput PDF reports from the TSA FOIA Reading Room.
-* Normalize report metadata such as report week start and week end dates.
-* Download PDF reports idempotently.
-* Preserve original TSA source URLs and filenames.
-* Maintain a local manifest of downloaded reports.
-* Parse TSA throughput PDFs into structured records.
-* Support parser plugins for different TSA PDF layouts over time.
-* Provide both a Python API and a command-line interface.
+## What It Does Not Do Yet
 
-## What it does not do
+The current package is focused on local discovery, download, manifest tracking,
+and parsing.
 
-Version 1 is focused on discovery, download, local tracking, and PDF parsing.
+It does not yet provide:
 
-It does not initially provide:
+- Complete historical parser coverage for every TSA PDF layout.
+- Cloud storage support such as S3, Azure Blob, or Google Cloud Storage.
+- A database loader.
+- A hosted API.
+- A dashboard or web application.
+- A guarantee that live TSA access works from every environment.
 
-* S3, Azure Blob, or Google Cloud Storage support.
-* A database loader.
-* A hosted API.
-* A dashboard or web application.
-* Guaranteed parsing coverage for every historical TSA PDF layout.
+Historical layouts should be added incrementally as separate parser plugins.
 
-Historical parsing coverage will be added incrementally through parser plugins.
+## Source Data
 
-## Source data
-
-The source data comes from the TSA public FOIA Reading Room.
+The source data is published by TSA in the public FOIA Reading Room.
 
 Current listing URL:
 
@@ -43,87 +49,70 @@ Current listing URL:
 https://www.tsa.gov/foia/readingroom?title=&field_foia_tax_category_target_id=1132&page=0
 ```
 
-The listing is paginated and contains links to weekly TSA throughput PDF reports.
+The listing is paginated and contains links to weekly throughput PDF reports.
+The package can discover those links live, but live discovery and live download
+depend on local network access and TSA site availability. Tests use fixtures or
+injected fetchers and should not require live network access by default.
 
-Because the TSA has changed PDF table layouts over time, this package uses parser plugins rather than assuming every report has the same schema.
+Because TSA has changed report layouts over time, parsing is plugin-based.
 
 ## Installation
+
+For users:
 
 ```bash
 pip install tsa-throughput
 ```
 
-For local development:
+For local development in this repository, use the Conda environment named
+`bearing-tsa`:
 
 ```bash
-git clone https://github.com/<owner>/tsa-throughput.git
-cd tsa-throughput
-python -m venv .venv
-source .venv/bin/activate
+conda activate bearing-tsa
 pip install -e ".[dev]"
 ```
 
-## Quick start
+If the environment does not already exist:
 
-Download the latest known TSA throughput report:
+```bash
+conda create -n bearing-tsa python=3.10
+conda activate bearing-tsa
+pip install -e ".[dev]"
+```
+
+Python 3.10 or newer is required.
+
+## Quick Start
+
+Discover the latest listing page:
+
+```bash
+tsa-throughput discover --latest
+```
+
+Download the latest discovered reports into local storage:
 
 ```bash
 tsa-throughput download --latest --output-dir data/raw
 ```
 
-Parse a downloaded PDF to CSV:
+Parse one downloaded PDF to CSV:
 
 ```bash
-tsa-throughput parse data/raw/tsa-throughput-week-ending-2026-06-06.pdf \
-  --output data/parsed/tsa-throughput-week-ending-2026-06-06.csv
+tsa-throughput parse path/to/report.pdf --output data/parsed/report.csv
 ```
 
-## Python usage
+Parse all PDFs in a local directory to one CSV:
 
-Discover reports from the TSA listing:
-
-```python
-from tsa_throughput import discover_reports
-
-reports = discover_reports(max_pages=1)
-
-for report in reports:
-    print(report.week_start, report.week_end, report.url)
+```bash
+tsa-throughput parse-all --input-dir data/raw --output data/parsed/throughput.csv
 ```
 
-Download missing reports:
+## Command-Line Usage
 
-```python
-from pathlib import Path
+### Discover Reports
 
-from tsa_throughput import discover_reports, download_missing_reports
-from tsa_throughput.storage import LocalStorage
-
-reports = discover_reports(max_pages=1)
-storage = LocalStorage(Path("data/raw"))
-
-results = download_missing_reports(reports, storage=storage)
-
-for result in results:
-    print(result.status, result.path)
-```
-
-Parse a report:
-
-```python
-from tsa_throughput import parse_report
-
-result = parse_report("data/raw/tsa-throughput-week-ending-2026-06-06.pdf")
-
-print(result.record_count)
-print(result.records[0])
-```
-
-## Command-line usage
-
-### Discover reports
-
-Discover the latest page of reports:
+Discover reports from the first listing page:
 
 ```bash
 tsa-throughput discover --latest
@@ -135,78 +124,225 @@ Discover all paginated reports:
 tsa-throughput discover --all
 ```
 
-Limit discovery to a fixed number of pages:
+Limit discovery to a fixed number of listing pages:
 
 ```bash
 tsa-throughput discover --max-pages 3
 ```
 
-Output as JSON:
+Output discovered, normalized report metadata as JSON:
 
 ```bash
 tsa-throughput discover --latest --format json
 ```
 
-### Download reports
+Text output is tab-separated:
 
-Download the latest reports:
+```text
+canonical_id  week_start  week_end  source_filename  date_confidence  source_url
+```
+
+### Download Reports
+
+Download reports from the first listing page:
 
 ```bash
 tsa-throughput download --latest --output-dir data/raw
 ```
 
-Backfill all discovered reports:
+Download all reports discovered by following pagination:
 
 ```bash
 tsa-throughput download --all --output-dir data/raw
 ```
 
-Download from the installed source manifest:
+Download from the installed source manifest distributed with the package:
 
 ```bash
 tsa-throughput download --from-installed-manifest --output-dir data/raw
 ```
 
-### Parse reports
+Download reports discovered from at most three listing pages:
+
+```bash
+tsa-throughput download --max-pages 3 --output-dir data/raw
+```
+
+Force re-downloads of reports that already exist:
+
+```bash
+tsa-throughput download --latest --output-dir data/raw --overwrite
+```
+
+Download output is tab-separated and includes the status, canonical report ID,
+and local path. Common statuses are `downloaded`, `skipped_existing`, and
+`overwritten`.
+
+### Parse Reports
 
 Parse one PDF to CSV:
 
 ```bash
-tsa-throughput parse data/raw/tsa-throughput-week-ending-2026-06-06.pdf \
-  --output data/parsed/report.csv
+tsa-throughput parse path/to/report.pdf --output data/parsed/report.csv
 ```
 
-Parse all PDFs in a directory:
+Limit parsing to the first five pages during development:
 
 ```bash
-tsa-throughput parse-all --input-dir data/raw --output data/parsed/throughput.csv
-```
-
-List available parser plugins:
-
-```bash
-tsa-throughput parsers list
-```
-
-Show which parser would match a report date:
-
-```bash
-tsa-throughput parsers match --week-ending 2026-06-06
+tsa-throughput parse path/to/report.pdf --output data/parsed/report.csv --max-pages 5
 ```
 
 Force a specific parser:
 
 ```bash
-tsa-throughput parse report.pdf \
+tsa-throughput parse path/to/report.pdf \
   --parser modern_total_pax_kcm_hourly_checkpoint_pdfplumber \
-  --output report.csv
+  --output data/parsed/report.csv
 ```
 
-## Parsed output
+### Parse a Directory
 
-The canonical parsed output is designed to support detailed hourly checkpoint-level records while allowing nullable fields for formats that do not provide every value.
+Parse all matching PDFs in a directory:
 
-Default CSV columns:
+```bash
+tsa-throughput parse-all --input-dir data/raw --output data/parsed/throughput.csv
+```
+
+Use a custom glob pattern:
+
+```bash
+tsa-throughput parse-all \
+  --input-dir data/raw \
+  --pattern "tsa-throughput-week-ending-2026-*.pdf" \
+  --output data/parsed/throughput.csv
+```
+
+Keep going after parser failures:
+
+```bash
+tsa-throughput parse-all \
+  --input-dir data/raw \
+  --output data/parsed/throughput.csv \
+  --continue-on-error
+```
+
+`parse-all` reads `manifest.json` from the input directory when present. That
+manifest supplies week dates, source URLs, source filenames, and canonical
+filenames. If no manifest entry matches a PDF, `parse-all` falls back to a
+minimal report inferred from filenames like
+`tsa-throughput-week-ending-YYYY-MM-DD.pdf`.
+
+### Inspect Parsers
+
+List parser plugins from the installed parser manifest:
+
+```bash
+tsa-throughput parsers list
+```
+
+Show which parser matches a report week ending date:
+
+```bash
+tsa-throughput parsers match --week-ending 2026-06-06
+```
+
+Optionally validate parser selection against a PDF:
+
+```bash
+tsa-throughput parsers match \
+  --week-ending 2026-06-06 \
+  --pdf-path path/to/report.pdf
+```
+
+## Python Usage
+
+### Discover Report Links
+
+```python
+from tsa_throughput.discovery import discover_report_links
+
+raw_links = discover_report_links(max_pages=1)
+
+for link in raw_links:
+    print(link.title, link.url)
+```
+
+### Normalize Report Links
+
+```python
+from tsa_throughput.discovery import discover_report_links
+from tsa_throughput.normalization import normalize_report_links
+
+raw_links = discover_report_links(max_pages=1)
+reports = normalize_report_links(raw_links)
+
+for report in reports:
+    print(report.canonical_id, report.week_start, report.week_end)
+```
+
+### Load the Installed Source Manifest
+
+```python
+from tsa_throughput.source_manifest import (
+    list_source_reports,
+    load_installed_source_manifest,
+)
+
+manifest = load_installed_source_manifest()
+reports = list_source_reports(manifest)
+
+print(manifest.generated_at)
+print(reports[0].canonical_filename)
+```
+
+### Download Missing Reports
+
+```python
+from pathlib import Path
+
+from tsa_throughput.download import download_missing_reports
+from tsa_throughput.source_manifest import list_source_reports
+from tsa_throughput.storage import LocalStorage
+
+reports = list_source_reports()
+storage = LocalStorage(Path("data/raw"))
+
+results = download_missing_reports(
+    reports,
+    storage=storage,
+    manifest_path=storage.root / "manifest.json",
+)
+
+for result in results:
+    print(result.status, result.path)
+```
+
+### Parse One Report
+
+```python
+from pathlib import Path
+
+from tsa_throughput.models import ThroughputReport
+from tsa_throughput.parsing.registry import get_parser
+
+pdf_path = Path("data/raw/tsa-throughput-week-ending-2026-06-06.pdf")
+report = ThroughputReport(
+    source_url="",
+    week_end=None,
+    source_filename=pdf_path.name,
+    canonical_filename=pdf_path.name,
+)
+
+parser = get_parser(report, pdf_path)
+result = parser.parse(pdf_path, report=report)
+
+print(result.record_count)
+print(result.records[0])
+```
+
+## Parsed CSV Schema
+
+The CLI writes parsed records with these columns:
 
 ```text
 throughput_date
@@ -230,7 +366,10 @@ parser_version
 parse_confidence
 ```
 
-Example conceptual record:
+Dates are written as `YYYY-MM-DD`. Hours are written as `HH:MM`. Missing values
+are written as empty CSV fields. `source_file` is written as the source filename.
+
+Example record:
 
 ```json
 {
@@ -247,6 +386,7 @@ Example conceptual record:
   "week_start": "2026-05-31",
   "week_end": "2026-06-06",
   "source_file": "tsa-throughput-week-ending-2026-06-06.pdf",
+  "source_url": "https://www.tsa.gov/sites/default/files/foia-readingroom/tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf",
   "source_page": 1,
   "source_table": 1,
   "parser_name": "modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
@@ -255,83 +395,21 @@ Example conceptual record:
 }
 ```
 
-## Parser plugins
+## Manifests
 
-TSA PDF layouts may change over time, so parsing is handled by plugins.
+### Parser Manifest
 
-Each parser plugin defines:
-
-* The PDF layout it supports.
-* The date range it is expected to cover.
-* The source columns it expects.
-* How source columns map to canonical output fields.
-* Which fields should be forward-filled.
-* How values should be normalized.
-* Whether it can safely parse a given PDF.
-
-Parser metadata is distributed with the package in:
+The parser manifest is distributed with the package:
 
 ```text
 src/tsa_throughput/assets/parser_manifest.json
 ```
 
-Example parser manifest entry:
+It records parser name, module, class, valid date range, priority, layout family,
+and description. The registry loads this manifest, selects candidates by week
+ending date when available, and then calls parser `can_parse()` before parsing.
 
-```json
-{
-  "name": "modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
-  "module": "tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
-  "class": "ModernTotalPaxKcmHourlyCheckpointPdfplumberParser",
-  "valid_from": "2026-01-01",
-  "valid_to": null,
-  "priority": 100,
-  "layout_family": "hourly_checkpoint_total_pax_kcm",
-  "description": "Parser for modern hourly airport/checkpoint TSA throughput tables with Total Pax + KCM PAX counts."
-}
-```
-
-If TSA changes the PDF layout, a new parser plugin can be added without changing the rest of the library.
-
-## Current parser focus
-
-The first parser focuses on the modern TSA PDF layout where the table structure is:
-
-```text
-Date
-Hour of Day
-Airport
-[airport name]
-City
-State
-Checkpoint
-Total Pax + KCM PAX
-```
-
-The parser uses `pdfplumber` line-based table extraction.
-
-Forward-filled fields:
-
-```text
-throughput_date
-hour
-airport_code
-airport_name
-city
-state
-```
-
-Fields that are not forward-filled:
-
-```text
-checkpoint_name
-throughput_count
-```
-
-## Manifests
-
-The project uses two manifest concepts.
-
-### Installed source manifest
+### Installed Source Manifest
 
 The installed source manifest is distributed with the package:
 
@@ -339,77 +417,85 @@ The installed source manifest is distributed with the package:
 src/tsa_throughput/assets/source_manifest.json
 ```
 
-It stores known TSA report links and metadata, including:
+It stores known TSA report metadata:
 
-* Canonical report ID
-* Week start
-* Week end
-* Original title
-* Source URL
-* Original TSA filename
-* Canonical filename
-* Date confidence
-* Alternate URLs, if any
+- Canonical report ID.
+- Week start and week end.
+- Original title.
+- Source URL.
+- Original TSA filename.
+- Canonical local filename.
+- Date confidence.
+- Listing URL.
+- Alternate URLs.
 
-This manifest allows users to work from a known report catalog without scraping the live TSA listing every time.
+Use `tsa-throughput download --from-installed-manifest` when you want to download
+from this packaged catalog instead of scraping the live listing first.
 
-### Runtime download manifest
+### Runtime Download Manifest
 
-When reports are downloaded, a local runtime manifest is written to the output directory:
+When reports are downloaded, a local runtime manifest is written under the output
+directory:
 
 ```text
 data/raw/manifest.json
 ```
 
-It records:
+It records downloaded reports, local filenames, source URLs, original filenames,
+SHA-256 checksums, byte sizes, download timestamps, and date confidence. The
+downloader uses this manifest to skip existing files unless `--overwrite` is
+provided.
 
-* Downloaded reports
-* Source URLs
-* Original filenames
-* Canonical local filenames
-* SHA-256 checksums
-* Download timestamps
-* File sizes
-* Date confidence
+## Parser Plugins
 
-This makes scheduled jobs safe to rerun.
+Parser plugins implement `tsa_throughput.parsing.base.ThroughputParser`.
 
-## Date handling
+Each parser provides:
 
-Each weekly report may have a start date and end date in the link title, source filename, or both.
+- `parser_name`
+- `parser_version`
+- `layout_family`
+- `can_parse(report, pdf_path)`
+- `parse(source_file, max_pages=None, report=None)`
 
-The package stores both:
-
-```text
-week_start
-week_end
-```
-
-The canonical report identity uses the week end date:
+The current installed parser is:
 
 ```text
-tsa-throughput-week-ending-YYYY-MM-DD
+modern_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
-Example filename:
+It supports the modern hourly checkpoint layout with these columns:
 
 ```text
-tsa-throughput-week-ending-2026-06-06.pdf
+Date
+Hour of Day
+Airport
+[blank airport name column]
+City
+State
+Checkpoint
+Total Pax + KCM PAX
 ```
 
-If the title and URL disagree, the report is marked with:
+The parser uses `pdfplumber` line-based table extraction and emits the canonical
+CSV schema above. It forward-fills repeated date, hour, airport code, airport
+name, city, and state values. It does not forward-fill checkpoint names or
+throughput counts.
 
-```text
-date_confidence = "conflict"
-```
+Current limitations:
 
-Conflicting reports are preserved in metadata, but the downloader should not overwrite an existing canonical local file automatically.
+- Only the modern `Total Pax + KCM PAX` hourly checkpoint layout is implemented.
+- Historical layouts must be added as separate parser plugins.
+- Parser manifest date ranges should be treated as conservative hints, not proof
+  of universal coverage.
+- The parser fails conservatively when required headers or fields are missing.
 
 ## Development
 
-Install development dependencies:
+Use the project Conda environment:
 
 ```bash
+conda activate bearing-tsa
 pip install -e ".[dev]"
 ```
 
@@ -431,63 +517,17 @@ Build the package:
 python -m build
 ```
 
-## Testing
-
-Tests should not make live network calls by default.
-
-Fixtures should be stored under:
-
-```text
-tests/fixtures/
-```
-
-Recommended fixture types:
-
-* Saved TSA listing pages
-* Sample TSA PDFs
-* Parser manifest examples
-* Source manifest examples
-* Duplicate report link examples
-* Date conflict examples
-* Malformed listing pages
-
-Optional live tests may be marked separately:
+Useful CLI verification commands:
 
 ```bash
-pytest -m integration
+tsa-throughput --help
+tsa-throughput discover --help
+tsa-throughput download --help
+tsa-throughput parse --help
+tsa-throughput parse-all --help
+tsa-throughput parsers list
+tsa-throughput parsers match --week-ending 2026-06-06
 ```
 
-Live tests should require an explicit environment variable:
-
-```bash
-TSA_THROUGHPUT_RUN_LIVE_TESTS=1
-```
-
-## Development roadmap
-
-Recommended implementation order:
-
-1. Package skeleton and data models.
-2. Modern PDF parser plugin.
-3. Parser registry and parser manifest.
-4. CLI parse command.
-5. Local storage abstraction.
-6. Runtime download manifest.
-7. TSA listing discovery from saved fixtures.
-8. Report metadata normalization.
-9. Idempotent downloader.
-10. Installed source manifest refresh.
-11. Historical parser plugins as needed.
-
-## Contributing parser plugins
-
-When adding support for a new TSA PDF layout:
-
-1. Add a representative PDF fixture.
-2. Create a new parser plugin.
-3. Register it in `parser_manifest.json`.
-4. Add tests for the new layout.
-5. Confirm older parser tests still pass.
-6. Document the new layout family.
-
-Parser plugins should fail conservatively. If required fields cannot be mapped with reasonable confidence, the parser should raise a clear error rather than returning guessed records.
+Default tests should not make live network calls. Live or integration tests, if
+added, should be marked separately and require explicit opt-in.
