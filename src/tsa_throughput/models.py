@@ -41,6 +41,32 @@ class DownloadResult:
     size_bytes: int | None = None
 
 
+@dataclass(frozen=True, slots=True)
+class RuntimeManifestEntry:
+    """One locally downloaded report entry in the runtime manifest."""
+
+    canonical_id: str
+    week_start: date | None
+    week_end: date | None
+    source_url: str
+    source_filename: str
+    canonical_filename: str
+    local_path: str
+    sha256: str
+    bytes: int
+    downloaded_at: str
+    date_confidence: str
+
+
+@dataclass(frozen=True, slots=True)
+class RuntimeManifest:
+    """Local runtime manifest of downloaded TSA throughput reports."""
+
+    schema_version: int
+    updated_at: str
+    reports: list[RuntimeManifestEntry] = field(default_factory=list)
+
+
 @dataclass(slots=True)
 class ThroughputRecord:
     """Canonical parsed TSA throughput record."""
@@ -78,4 +104,3 @@ class ParseResult:
     week_start: date | None = None
     week_end: date | None = None
     errors: list[str] = field(default_factory=list)
-
