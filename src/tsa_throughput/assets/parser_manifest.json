@@ -1,1 +1,15 @@
-{}
+{
+  "schema_version": 1,
+  "parsers": [
+    {
+      "name": "modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber",
+      "class": "ModernTotalPaxKcmHourlyCheckpointPdfplumberParser",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "priority": 100,
+      "layout_family": "hourly_checkpoint_total_pax_kcm",
+      "description": "Parser for modern hourly airport/checkpoint TSA throughput tables with Total Pax + KCM PAX counts."
+    }
+  ]
+}

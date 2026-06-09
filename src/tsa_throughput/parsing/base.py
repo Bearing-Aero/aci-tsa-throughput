@@ -16,6 +16,10 @@ class ThroughputParser(ABC):
     layout_family: str
 
     @abstractmethod
+    def can_parse(self, report: ThroughputReport, pdf_path: Path) -> bool:
+        """Return whether this parser can parse the report PDF."""
+
+    @abstractmethod
     def parse(
         self,
         source_file: Path,

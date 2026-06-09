@@ -38,6 +38,27 @@ class ModernTotalPaxKcmHourlyCheckpointPdfplumberParser(ThroughputParser):
     parser_version = PARSER_VERSION
     layout_family = LAYOUT_FAMILY
 
+    def can_parse(self, report: ThroughputReport, pdf_path: Path) -> bool:
+        """Return whether the PDF contains a modern-layout throughput table."""
+        del report
+
+        try:
+            with pdfplumber.open(Path(pdf_path)) as pdf:
+                pages_to_check = min(len(pdf.pages), 5)
+                for page_index in range(pages_to_check):
+                    source_page = page_index + 1
+                    tables = pdf.pages[page_index].extract_tables(table_settings=TABLE_SETTINGS)
+                    if self._matching_tables(
+                        tables,
+                        source_file=Path(pdf_path),
+                        source_page=source_page,
+                    ):
+                        return True
+        except Exception:
+            return False
+
+        return False
+
     def parse(
         self,
         source_file: Path,
