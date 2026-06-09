@@ -291,6 +291,16 @@ available.
 Historical layouts should be implemented as separate parser plugins with their
 own fixtures, manifest entries, and tests.
 
+Use the parser coverage scanner against a downloaded corpus to find the next
+boundary before implementing a historical plugin:
+
+```bash
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error
+```
+
+The first failure after one or more successful modern parses is the best
+candidate PDF for the next fixture and parser plugin.
+
 Known future direction:
 
 ```text

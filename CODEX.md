@@ -107,6 +107,7 @@ tsa-throughput parse
 tsa-throughput parse-all
 tsa-throughput parsers list
 tsa-throughput parsers match --week-ending 2026-06-06
+tsa-throughput parsers coverage --input-dir data/raw
 ```
 
 Important options:
@@ -118,6 +119,8 @@ Important options:
 - `parse-all`: `--input-dir`, `--output`, `--pattern`, `--max-pages`,
   `--parser`, `--continue-on-error`, `--debug`
 - `parsers match`: `--week-ending`, optional `--pdf-path`, `--debug`
+- `parsers coverage`: `--input-dir`, `--pattern`, `--max-pages`,
+  `--stop-on-first-error`, `--format text|json`, `--debug`
 
 There are no implemented `manifest show` or `manifest refresh` CLI commands.
 
@@ -253,6 +256,8 @@ Parsing:
 3. CLI output uses the canonical CSV columns from `cli.CANONICAL_COLUMNS`.
 4. `parse-all` processes matching PDFs in deterministic filename order and can
    continue after parser failures when requested.
+5. `parsers coverage` processes downloaded PDFs in reverse chronological order
+   and reports the first parser coverage boundary for historical plugin work.
 
 ## Current Status
 
@@ -271,10 +276,13 @@ Implemented:
 - Idempotent downloader.
 - Discovery and download CLI commands.
 - Parse-all CLI command.
+- Parser coverage scanner and CLI command.
 
 ## Remaining Roadmap
 
-- Add historical parser plugins as representative fixtures are available.
+- Use `tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error`
+  to identify the next historical layout boundary, then add a focused parser
+  plugin and fixture for that first failure PDF.
 - Add source manifest refresh tooling if needed.
 - Broaden parser manifests with conservative valid date ranges backed by tests.
 - Add richer integration tests behind explicit live-network opt-in.

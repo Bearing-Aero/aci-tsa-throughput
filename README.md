@@ -19,6 +19,7 @@ of TSA throughput data.
 - Safe local filesystem storage for downloaded reports.
 - A parser manifest and parser registry.
 - A modern TSA PDF parser plugin for hourly checkpoint-level reports.
+- A parser coverage scanner for identifying historical layout boundaries.
 - CSV output for parsed throughput records.
 - CLI commands for discovery, download, parsing, batch parsing, and parser inspection.
 - Python APIs for each core step.
@@ -106,6 +107,12 @@ Parse all PDFs in a local directory to one CSV:
 
 ```bash
 tsa-throughput parse-all --input-dir data/raw --output data/parsed/throughput.csv
+```
+
+Find the next historical parser boundary in downloaded PDFs:
+
+```bash
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error
 ```
 
 ## Command-Line Usage
@@ -253,6 +260,27 @@ tsa-throughput parsers match \
   --week-ending 2026-06-06 \
   --pdf-path path/to/report.pdf
 ```
+
+Scan downloaded PDFs from newest to oldest to identify where installed parser
+coverage stops:
+
+```bash
+tsa-throughput parsers coverage --input-dir data/raw
+```
+
+Useful development options:
+
+```bash
+tsa-throughput parsers coverage --input-dir data/raw --pattern "*.pdf"
+tsa-throughput parsers coverage --input-dir data/raw --max-pages 3
+tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error
+tsa-throughput parsers coverage --input-dir data/raw --format json
+```
+
+The coverage scanner reads `manifest.json` when available and falls back to
+canonical filenames like `tsa-throughput-week-ending-YYYY-MM-DD.pdf`. It reports
+the earliest successful week ending date and the first failure, which is the PDF
+to inspect when adding the next historical parser plugin.
 
 ## Python Usage
 

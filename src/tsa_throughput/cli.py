@@ -22,6 +22,12 @@ from tsa_throughput.parsing.batch import (
     BatchParseResult,
     parse_reports_in_directory,
 )
+from tsa_throughput.parsing.coverage import (
+    DEFAULT_COVERAGE_PATTERN,
+    ParserCoverageResult,
+    ParserCoverageSummary,
+    scan_parser_coverage,
+)
 from tsa_throughput.parsing.registry import (
     ParserManifestEntry,
     get_parser,
@@ -227,6 +233,45 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parsers_match_parser.set_defaults(handler=_handle_parsers_match)
 
+    parsers_coverage_parser = parsers_subparsers.add_parser(
+        "coverage",
+        help="Scan downloaded PDFs to find parser coverage boundaries.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--input-dir",
+        required=True,
+        type=Path,
+        help="Directory containing downloaded TSA PDF reports.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--pattern",
+        default=DEFAULT_COVERAGE_PATTERN,
+        help="Glob pattern for PDF files under --input-dir.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Limit parsing to the first N pages of each PDF.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--stop-on-first-error",
+        action="store_true",
+        help="Stop after the first parser failure once at least one PDF has parsed.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="Output format.",
+    )
+    parsers_coverage_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    parsers_coverage_parser.set_defaults(handler=_handle_parsers_coverage)
+
     return parser
 
 
@@ -397,6 +442,22 @@ def _handle_parsers_match(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_parsers_coverage(args: argparse.Namespace) -> int:
+    result = scan_parser_coverage(
+        Path(args.input_dir),
+        pattern=args.pattern,
+        max_pages=args.max_pages,
+        stop_on_first_error=args.stop_on_first_error,
+    )
+
+    if args.format == "json":
+        print(json.dumps(_coverage_summary_to_json(result), indent=2))
+    else:
+        _print_parser_coverage_summary(result, Path(args.input_dir))
+
+    return 0
+
+
 def _find_parser_entry(parser_name: str) -> ParserManifestEntry:
     for entry in list_parsers():
         if entry.name == parser_name:
@@ -476,6 +537,100 @@ def _print_parse_all_summary(result: BatchParseResult, output_path: Path) -> Non
 
     for failure in result.failures:
         print(f"Failure: {failure.pdf_path.name}: {failure.error}", file=sys.stderr)
+
+
+def _print_parser_coverage_summary(
+    result: ParserCoverageSummary,
+    input_dir: Path,
+) -> None:
+    first_failure = result.first_failure
+
+    print("Parser coverage scan")
+    print(f"  input_dir: {input_dir}")
+    print(f"  pdfs scanned: {result.scanned_count}")
+    print(f"  parsed successfully: {result.success_count}")
+    print(f"  failed: {result.failure_count}")
+    print(f"  skipped: {result.skipped_count}")
+    print(
+        "  latest successful week ending: "
+        f"{_display_value(result.latest_success_week_end)}"
+    )
+    print(
+        "  earliest successful week ending: "
+        f"{_display_value(result.earliest_success_week_end)}"
+    )
+    print(f"  first failure week ending: {_display_value(result.first_failure_week_end)}")
+    print(
+        "  first failure file: "
+        f"{_display_value(first_failure.path.name if first_failure else None)}"
+    )
+    print(
+        "  first failure reason: "
+        f"{_display_value(_coverage_failure_reason(first_failure))}"
+    )
+    parsers = sorted(
+        {
+            parsed.parser_name
+            for parsed in result.results
+            if parsed.status == "parsed" and parsed.parser_name is not None
+        }
+    )
+    print(f"  parsers used: {_display_value(', '.join(parsers) if parsers else None)}")
+
+    print()
+    print("Parser coverage boundary:")
+    print(
+        "  earliest successful week ending: "
+        f"{_display_value(result.earliest_success_week_end)}"
+    )
+    print(f"  first failure week ending: {_display_value(result.first_failure_week_end)}")
+    print(
+        "  first failure file: "
+        f"{_display_value(first_failure.path.name if first_failure else None)}"
+    )
+    print(f"  failure reason: {_display_value(_coverage_failure_reason(first_failure))}")
+
+
+def _coverage_failure_reason(result: ParserCoverageResult | None) -> str | None:
+    if result is None:
+        return None
+    if result.status == "no_matching_parser":
+        return "no matching parser"
+    if result.status == "parse_error":
+        return "parse error"
+    if result.status == "file_error":
+        return "file error"
+    return result.status
+
+
+def _coverage_summary_to_json(result: ParserCoverageSummary) -> dict[str, Any]:
+    return {
+        "summary": {
+            "scanned_count": result.scanned_count,
+            "success_count": result.success_count,
+            "failure_count": result.failure_count,
+            "skipped_count": result.skipped_count,
+            "latest_success_week_end": _json_value(result.latest_success_week_end),
+            "earliest_success_week_end": _json_value(result.earliest_success_week_end),
+            "first_failure_week_end": _json_value(result.first_failure_week_end),
+            "first_failure_path": _json_value(result.first_failure_path),
+            "first_failure_reason": _coverage_failure_reason(result.first_failure),
+        },
+        "results": [_coverage_result_to_json(item) for item in result.results],
+    }
+
+
+def _coverage_result_to_json(result: ParserCoverageResult) -> dict[str, Any]:
+    return {
+        "path": _json_value(result.path),
+        "canonical_id": result.canonical_id,
+        "week_end": _json_value(result.week_end),
+        "parser_name": result.parser_name,
+        "status": result.status,
+        "record_count": result.record_count,
+        "error_type": result.error_type,
+        "error_message": result.error_message,
+    }
 
 
 def _write_records_csv(records: Sequence[ThroughputRecord], output_path: Path) -> None:
