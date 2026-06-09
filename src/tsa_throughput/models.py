@@ -13,6 +13,15 @@ class RawReportLink:
     url: str
     source_page_url: str | None = None
     source_page: int | None = None
+    source_filename: str | None = None
+    listing_url: str | None = None
+
+    def __post_init__(self) -> None:
+        """Keep old and new listing URL field names in sync."""
+        if self.listing_url is None and self.source_page_url is not None:
+            self.listing_url = self.source_page_url
+        if self.source_page_url is None and self.listing_url is not None:
+            self.source_page_url = self.listing_url
 
 
 @dataclass(slots=True)
