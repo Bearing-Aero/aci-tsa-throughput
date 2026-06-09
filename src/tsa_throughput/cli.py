@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import sys
 import traceback
 from collections.abc import Sequence
@@ -11,14 +12,19 @@ from datetime import date, time
 from pathlib import Path
 from typing import Any
 
+from tsa_throughput.discovery import discover_report_links
+from tsa_throughput.download import download_missing_reports
 from tsa_throughput.exceptions import ParseError, TSAThroughputError
-from tsa_throughput.models import ThroughputRecord, ThroughputReport
+from tsa_throughput.models import DownloadResult, ThroughputRecord, ThroughputReport
+from tsa_throughput.normalization import normalize_report_links
 from tsa_throughput.parsing.registry import (
     ParserManifestEntry,
     get_parser,
     list_parsers,
     match_parser_manifest_entry,
 )
+from tsa_throughput.source_manifest import list_source_reports
+from tsa_throughput.storage import LocalStorage
 
 CANONICAL_COLUMNS = [
     "throughput_date",
@@ -61,6 +67,47 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tsa-throughput")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    discover_parser = subparsers.add_parser(
+        "discover",
+        help="Discover TSA throughput reports from the FOIA listing.",
+    )
+    _add_discovery_scope_arguments(discover_parser)
+    discover_parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="Output format.",
+    )
+    discover_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    discover_parser.set_defaults(handler=_handle_discover)
+
+    download_parser = subparsers.add_parser(
+        "download",
+        help="Download TSA throughput reports.",
+    )
+    _add_download_scope_arguments(download_parser)
+    download_parser.add_argument(
+        "--output-dir",
+        required=True,
+        type=Path,
+        help="Directory where downloaded reports and manifest.json will be written.",
+    )
+    download_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Force re-downloads of reports that already exist.",
+    )
+    download_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    download_parser.set_defaults(handler=_handle_download)
 
     parse_parser = subparsers.add_parser("parse", help="Parse a TSA throughput PDF to CSV.")
     parse_parser.add_argument("pdf_path", type=Path, help="Path to the source TSA PDF.")
@@ -130,6 +177,98 @@ def _build_parser() -> argparse.ArgumentParser:
     parsers_match_parser.set_defaults(handler=_handle_parsers_match)
 
     return parser
+
+
+def _add_discovery_scope_arguments(parser: argparse.ArgumentParser) -> None:
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument(
+        "--latest",
+        action="store_true",
+        help="Discover reports from the first listing page.",
+    )
+    scope.add_argument(
+        "--all",
+        action="store_true",
+        help="Follow pagination until no next page exists.",
+    )
+    scope.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Discover reports from at most N listing pages.",
+    )
+
+
+def _add_download_scope_arguments(parser: argparse.ArgumentParser) -> None:
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument(
+        "--latest",
+        action="store_true",
+        help="Discover and download reports from the first listing page.",
+    )
+    scope.add_argument(
+        "--all",
+        action="store_true",
+        help="Discover and download all paginated reports.",
+    )
+    scope.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Discover and download reports from at most N listing pages.",
+    )
+    scope.add_argument(
+        "--from-installed-manifest",
+        action="store_true",
+        help="Download reports from the installed source manifest.",
+    )
+
+
+def _handle_discover(args: argparse.Namespace) -> int:
+    reports = _discover_reports_for_args(args)
+
+    if args.format == "json":
+        print(json.dumps([_report_to_json(report) for report in reports], indent=2))
+    else:
+        for report in reports:
+            print(_report_text_line(report))
+
+    return 0
+
+
+def _handle_download(args: argparse.Namespace) -> int:
+    reports = _download_reports_for_args(args)
+    storage = LocalStorage(Path(args.output_dir))
+    results = download_missing_reports(
+        reports,
+        storage=storage,
+        manifest_path=storage.root / "manifest.json",
+        overwrite=args.overwrite,
+    )
+
+    for result in results:
+        print(_download_result_text_line(result))
+
+    return 0
+
+
+def _discover_reports_for_args(args: argparse.Namespace) -> list[ThroughputReport]:
+    raw_links = discover_report_links(max_pages=_listing_max_pages(args))
+    return normalize_report_links(raw_links)
+
+
+def _download_reports_for_args(args: argparse.Namespace) -> list[ThroughputReport]:
+    if args.from_installed_manifest:
+        return list_source_reports()
+    return _discover_reports_for_args(args)
+
+
+def _listing_max_pages(args: argparse.Namespace) -> int | None:
+    if args.all:
+        return None
+    if args.max_pages is not None:
+        return args.max_pages
+    return 1
 
 
 def _handle_parse(args: argparse.Namespace) -> int:
@@ -217,6 +356,55 @@ def _display_value(value: object | None) -> str:
     if isinstance(value, date):
         return value.isoformat()
     return str(value)
+
+
+def _report_to_json(report: ThroughputReport) -> dict[str, Any]:
+    return {
+        "canonical_id": report.canonical_id,
+        "week_start": _json_value(report.week_start),
+        "week_end": _json_value(report.week_end),
+        "title": report.title,
+        "source_url": report.source_url,
+        "source_filename": report.source_filename,
+        "canonical_filename": report.canonical_filename,
+        "date_confidence": report.date_confidence,
+        "listing_url": report.listing_url,
+        "alternate_urls": report.alternate_urls,
+    }
+
+
+def _report_text_line(report: ThroughputReport) -> str:
+    return "\t".join(
+        [
+            _display_value(report.canonical_id),
+            _display_value(report.week_start),
+            _display_value(report.week_end),
+            _display_value(report.source_filename),
+            _display_value(report.date_confidence),
+            _display_value(report.source_url),
+        ]
+    )
+
+
+def _download_result_text_line(result: DownloadResult) -> str:
+    parts = [
+        _display_value(result.status),
+        _display_value(result.report.canonical_id),
+        _display_value(result.path),
+    ]
+    if result.message:
+        parts.append(_display_value(result.message))
+    return "\t".join(parts)
+
+
+def _json_value(value: Any) -> Any:
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, time):
+        return value.isoformat(timespec="minutes")
+    if isinstance(value, Path):
+        return str(value)
+    return value
 
 
 def _record_to_row(record: ThroughputRecord) -> dict[str, str]:
