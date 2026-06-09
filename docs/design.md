@@ -135,19 +135,35 @@ Behavior:
 
 1. Derive the source filename from the raw link or URL.
 2. Extract date ranges from the link title and URL/path.
-3. Store `week_start` and `week_end` when available.
-4. Assign a date confidence:
+3. Validate extracted ranges before choosing canonical dates.
+4. Store `week_start` and `week_end` when available.
+5. Assign a date confidence:
    - `title_url_match`
    - `title_only`
    - `url_only`
    - `title_url_conflict`
+   - `title_invalid_url_used`
+   - `url_invalid_title_used`
    - `missing`
-5. Build canonical IDs from week end dates:
+6. Build canonical IDs from week end dates:
    `tsa-throughput-week-ending-YYYY-MM-DD`.
-6. Build canonical PDF filenames:
+7. Build canonical PDF filenames:
    `tsa-throughput-week-ending-YYYY-MM-DD.pdf`.
-7. De-duplicate by canonical ID when dates are known.
-8. Sort normalized reports newest first.
+8. De-duplicate by canonical ID when dates are known.
+9. Sort normalized reports newest first.
+
+Date extraction supports full month-day-year ranges, compact legacy same-month
+ranges such as `February 12-18, 2017`, and compact cross-month ranges such as
+`February 26-March 4, 2017`. Ranges that go backward or are not close to a
+weekly report period are treated as invalid and do not produce canonical IDs
+when a better source is available.
+
+When title and URL/filename dates are both valid but disagree, normalization
+keeps conservative conflict behavior by default. A small exact filename override
+table handles known TSA data errors where the filename period is the trusted
+canonical report period. This includes selected malformed titles and legacy
+`.xlsx.pdf` source filenames. Override cases are not marked as clean
+`title_url_match` values.
 
 If dates cannot be found, the report is still preserved with an unknown-date
 canonical filename based on a sanitized source filename.

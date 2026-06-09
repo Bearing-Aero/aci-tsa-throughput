@@ -55,6 +55,22 @@ python -m build
 
 Default tests must not require live network access.
 
+## Normalization Edge Cases
+
+`normalization.py` extracts report week ranges from titles and URL/filename
+text, validates candidate ranges, and preserves visible `date_confidence`
+markers when metadata is malformed or conflicting.
+
+Supported date patterns include standard full ranges, compact legacy same-month
+ranges such as `February 12-18, 2017`, and compact cross-month ranges such as
+`February 26-March 4, 2017`. Impossible or non-weekly ranges are ignored when a
+valid alternate source exists.
+
+Known TSA title/filename conflicts where the filename is the trusted report
+period are handled by exact filename overrides in `normalization.py`. Keep this
+override list narrow and prefer exact `source_filename` keys. Source filenames
+ending in `.xlsx.pdf` can still normalize to canonical `.pdf` filenames.
+
 ## Implemented Package Layout
 
 ```text
@@ -237,8 +253,8 @@ Discovery:
 1. `discover_report_links()` fetches TSA FOIA listing pages, extracts PDF links,
    follows pagination, de-duplicates URLs, and returns `RawReportLink` objects.
 2. `normalize_report_links()` extracts date ranges from titles/URLs, builds
-   canonical IDs and filenames, de-duplicates by canonical report, and sorts
-   newest first.
+   canonical IDs and filenames, applies narrow known-error overrides,
+   de-duplicates by canonical report, and sorts newest first.
 
 Download:
 

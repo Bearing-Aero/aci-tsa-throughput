@@ -57,6 +57,24 @@ injected fetchers and should not require live network access by default.
 
 Because TSA has changed report layouts over time, parsing is plugin-based.
 
+## Normalization Notes
+
+Source report metadata can contain TSA-provided title and filename mistakes.
+Normalization extracts dates from both the link title and URL/filename, validates
+candidate weekly ranges, and keeps non-clean `date_confidence` values when the
+sources disagree or one source appears invalid.
+
+Handled edge cases include compact legacy ranges such as
+`TSA Throughput February 12-18, 2017`, compact cross-month ranges such as
+`TSA Throughput February 26-March 4, 2017`, obvious invalid ranges caused by
+bad years or backward dates, and source filenames ending in `.xlsx.pdf`.
+Known one-off TSA title/filename conflicts are handled by exact filename
+overrides so canonical IDs are based on the trusted report period without
+broadly preferring filenames over titles.
+
+Canonical output filenames always use the normalized PDF form:
+`tsa-throughput-week-ending-YYYY-MM-DD.pdf`.
+
 ## Installation
 
 For users:
