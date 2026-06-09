@@ -31,12 +31,26 @@ class ThroughputReport:
     source_url: str
     week_start: date | None = None
     week_end: date | None = None
+    canonical_id: str | None = None
     report_id: str | None = None
     title: str | None = None
+    source_filename: str | None = None
     original_filename: str | None = None
     canonical_filename: str | None = None
     date_confidence: str = "unknown"
+    listing_url: str | None = None
     alternate_urls: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Keep legacy and canonical field names in sync."""
+        if self.canonical_id is None and self.report_id is not None:
+            self.canonical_id = self.report_id
+        if self.report_id is None and self.canonical_id is not None:
+            self.report_id = self.canonical_id
+        if self.source_filename is None and self.original_filename is not None:
+            self.source_filename = self.original_filename
+        if self.original_filename is None and self.source_filename is not None:
+            self.original_filename = self.source_filename
 
 
 @dataclass(slots=True)
