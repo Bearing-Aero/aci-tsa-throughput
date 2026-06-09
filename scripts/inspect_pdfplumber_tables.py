@@ -12,7 +12,8 @@ Usage:
     python scripts/inspect_pdfplumber_tables.py path/to/report.pdf
 
 Example:
-    python scripts/inspect_pdfplumber_tables.py tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf
+    python scripts/inspect_pdfplumber_tables.py \
+        tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf
 """
 
 from __future__ import annotations
@@ -24,7 +25,6 @@ from pathlib import Path
 from typing import Any
 
 import pdfplumber
-
 
 TABLE_SETTINGS_PRESETS: dict[str, dict[str, Any]] = {
     "default": {},

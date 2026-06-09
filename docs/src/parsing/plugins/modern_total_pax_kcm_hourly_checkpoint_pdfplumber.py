@@ -34,7 +34,6 @@ from typing import Any
 
 import pdfplumber
 
-
 TABLE_SETTINGS: dict[str, Any] = {
     "vertical_strategy": "lines",
     "horizontal_strategy": "lines",
@@ -169,7 +168,8 @@ def parse_table(
 
         if current_airport_code is None:
             raise ValueError(
-                f"Missing airport context on page {source_page}, table {source_table}, row {row_index}"
+                f"Missing airport context on page {source_page}, table {source_table}, "
+                f"row {row_index}"
             )
 
         if not raw_checkpoint:
@@ -179,7 +179,8 @@ def parse_table(
 
         if raw_count is None:
             raise ValueError(
-                f"Missing throughput count on page {source_page}, table {source_table}, row {row_index}"
+                f"Missing throughput count on page {source_page}, table {source_table}, "
+                f"row {row_index}"
             )
 
         if not re.fullmatch(r"[\d,]+", raw_count):

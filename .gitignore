@@ -1,6 +1,7 @@
 # Legacy ignores
 inspection_2026/
 ./*.pdf
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
