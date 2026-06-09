@@ -119,6 +119,7 @@ Implemented command families:
 ```bash
 tsa-throughput discover
 tsa-throughput download
+tsa-throughput manifest refresh --output source_manifest.json
 tsa-throughput parse
 tsa-throughput parse-all
 tsa-throughput parsers list
@@ -131,6 +132,8 @@ Important options:
 - `discover`: `--latest`, `--all`, `--max-pages`, `--format text|json`, `--debug`
 - `download`: `--latest`, `--all`, `--max-pages`, `--from-installed-manifest`,
   `--output-dir`, `--overwrite`, `--debug`
+- `manifest refresh`: `--output`, `--max-pages`, `--dry-run`,
+  `--format text|json`, `--debug`
 - `parse`: positional PDF path, `--output`, `--max-pages`, `--parser`, `--debug`
 - `parse-all`: `--input-dir`, `--output`, `--pattern`, `--max-pages`,
   `--parser`, `--continue-on-error`, `--debug`
@@ -138,7 +141,7 @@ Important options:
 - `parsers coverage`: `--input-dir`, `--pattern`, `--max-pages`,
   `--stop-on-first-error`, `--format text|json`, `--debug`
 
-There are no implemented `manifest show` or `manifest refresh` CLI commands.
+There is no implemented `manifest show` CLI command.
 
 ## Parser Architecture
 
@@ -227,6 +230,20 @@ Purpose:
 Use `source_manifest.py` APIs or
 `tsa-throughput download --from-installed-manifest`.
 
+Refresh workflow:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json
+tsa-throughput manifest refresh --output source_manifest.json --max-pages 3
+tsa-throughput manifest refresh --output source_manifest.json --dry-run
+tsa-throughput manifest refresh --output source_manifest.json --format json
+```
+
+Only write to `src/tsa_throughput/assets/source_manifest.json` when the committed
+installed manifest should be intentionally updated. Treat the installed source
+manifest as a known catalog, not a guarantee of live TSA availability. Review
+non-clean `date_confidence` values before publishing a refreshed manifest.
+
 ### Runtime Download Manifest
 
 Default path:
@@ -255,6 +272,15 @@ Discovery:
 2. `normalize_report_links()` extracts date ranges from titles/URLs, builds
    canonical IDs and filenames, applies narrow known-error overrides,
    de-duplicates by canonical report, and sorts newest first.
+
+Source manifest refresh:
+
+1. `refresh_source_manifest()` composes discovery, normalization, manifest
+   creation, and optional manifest writing.
+2. The CLI command writes stable indented JSON to the requested output path
+   unless `--dry-run` is supplied.
+3. Refresh tests must use fixture-backed or monkeypatched discovery and must not
+   require live TSA network access.
 
 Download:
 
@@ -291,6 +317,7 @@ Implemented:
 - Installed source manifest.
 - Idempotent downloader.
 - Discovery and download CLI commands.
+- Source manifest refresh API and CLI command.
 - Parse-all CLI command.
 - Parser coverage scanner and CLI command.
 
@@ -299,7 +326,6 @@ Implemented:
 - Use `tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error`
   to identify the next historical layout boundary, then add a focused parser
   plugin and fixture for that first failure PDF.
-- Add source manifest refresh tooling if needed.
 - Broaden parser manifests with conservative valid date ranges backed by tests.
 - Add richer integration tests behind explicit live-network opt-in.
 - Add downstream export/load helpers only after core parsing coverage is stable.

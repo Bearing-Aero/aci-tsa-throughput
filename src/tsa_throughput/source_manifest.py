@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from importlib import resources
 from pathlib import Path
 from typing import Any
 
+from tsa_throughput.discovery import discover_report_links
 from tsa_throughput.exceptions import ManifestError
 from tsa_throughput.models import SourceManifest, ThroughputReport
+from tsa_throughput.normalization import normalize_report_links
 
 SOURCE_MANIFEST_SCHEMA_VERSION = 1
 SOURCE_MANIFEST_ASSET = "source_manifest.json"
@@ -30,6 +34,17 @@ _REPORT_FIELDS = {
     "listing_url",
     "alternate_urls",
 }
+
+
+@dataclass(frozen=True, slots=True)
+class SourceManifestRefreshResult:
+    """Summary metadata for a source manifest refresh run."""
+
+    manifest: SourceManifest
+    raw_report_count: int
+    normalized_report_count: int
+    output_path: Path | None = None
+    dry_run: bool = False
 
 
 def load_installed_source_manifest() -> SourceManifest:
@@ -66,7 +81,7 @@ def save_source_manifest(manifest: SourceManifest, path: Path) -> None:
     try:
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         manifest_path.write_text(
-            json.dumps(_source_manifest_to_json(manifest), indent=2) + "\n",
+            json.dumps(source_manifest_to_json(manifest), indent=2) + "\n",
             encoding="utf-8",
         )
     except OSError as exc:
@@ -84,6 +99,45 @@ def create_source_manifest(
         source_name=SOURCE_MANIFEST_SOURCE_NAME,
         source_listing_url=SOURCE_MANIFEST_LISTING_URL,
         reports=_sort_reports(reports),
+    )
+
+
+def refresh_source_manifest(
+    output_path: Path | None = None,
+    max_pages: int | None = None,
+    fetch_html: Callable[[str], str] | None = None,
+    dry_run: bool = False,
+) -> SourceManifest:
+    """Refresh source report metadata from TSA FOIA discovery results."""
+    return refresh_source_manifest_with_result(
+        output_path=output_path,
+        max_pages=max_pages,
+        fetch_html=fetch_html,
+        dry_run=dry_run,
+    ).manifest
+
+
+def refresh_source_manifest_with_result(
+    output_path: Path | None = None,
+    max_pages: int | None = None,
+    fetch_html: Callable[[str], str] | None = None,
+    dry_run: bool = False,
+) -> SourceManifestRefreshResult:
+    """Refresh source report metadata and return summary counts for callers."""
+    raw_links = discover_report_links(max_pages=max_pages, fetch_html=fetch_html)
+    reports = normalize_report_links(raw_links)
+    manifest = create_source_manifest(reports)
+    manifest_path = Path(output_path) if output_path is not None else None
+
+    if manifest_path is not None and not dry_run:
+        save_source_manifest(manifest, manifest_path)
+
+    return SourceManifestRefreshResult(
+        manifest=manifest,
+        raw_report_count=len(raw_links),
+        normalized_report_count=len(reports),
+        output_path=manifest_path,
+        dry_run=dry_run,
     )
 
 
@@ -108,6 +162,11 @@ def find_source_report(
         ),
         None,
     )
+
+
+def source_manifest_to_json(manifest: SourceManifest) -> dict[str, Any]:
+    """Return a source manifest as a JSON-serializable dictionary."""
+    return _source_manifest_to_json(manifest)
 
 
 def _source_manifest_from_json_text(text: str, context: str) -> SourceManifest:

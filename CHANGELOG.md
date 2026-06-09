@@ -17,3 +17,4 @@
 - Idempotent PDF downloader.
 - Discovery and download CLI commands.
 - Parse-all CLI command.
+- Source manifest refresh API and CLI command.

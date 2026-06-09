@@ -11,9 +11,13 @@ import tsa_throughput.cli
 from tsa_throughput.cli import CANONICAL_COLUMNS, main
 from tsa_throughput.discovery import TSA_READING_ROOM_URL, discover_report_links
 from tsa_throughput.download import download_missing_reports
-from tsa_throughput.models import ThroughputReport
+from tsa_throughput.models import SourceManifest, ThroughputReport
 from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
     PARSER_NAME,
+)
+from tsa_throughput.source_manifest import (
+    SourceManifestRefreshResult,
+    save_source_manifest,
 )
 from tsa_throughput.storage import LocalStorage
 
@@ -229,6 +233,112 @@ def test_download_missing_output_dir_exits_nonzero() -> None:
         main(["download", "--latest"])
 
     assert exc_info.value.code != 0
+
+
+def test_manifest_refresh_command_exits_successfully_with_fixture_refresh(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_cli_manifest_refresh(monkeypatch)
+    output_path = tmp_path / "source_manifest.json"
+
+    exit_code = main(["manifest", "refresh", "--output", str(output_path)])
+
+    assert exit_code == 0
+    assert output_path.is_file()
+
+
+def test_manifest_refresh_dry_run_does_not_write_file(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_cli_manifest_refresh(monkeypatch)
+    output_path = tmp_path / "source_manifest.json"
+
+    exit_code = main(
+        ["manifest", "refresh", "--output", str(output_path), "--dry-run"]
+    )
+
+    assert exit_code == 0
+    assert not output_path.exists()
+
+
+def test_manifest_refresh_json_output_is_valid_json(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _patch_cli_manifest_refresh(monkeypatch)
+    output_path = tmp_path / "source_manifest.json"
+
+    exit_code = main(
+        [
+            "manifest",
+            "refresh",
+            "--output",
+            str(output_path),
+            "--dry-run",
+            "--format",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    manifest_json = json.loads(capsys.readouterr().out)
+    assert manifest_json["reports"][0]["canonical_id"] == NEWER_CANONICAL_ID
+
+
+def test_manifest_refresh_max_pages_is_passed_to_refresh(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[dict[str, object]] = []
+    _patch_cli_manifest_refresh(monkeypatch, calls)
+    output_path = tmp_path / "source_manifest.json"
+
+    exit_code = main(
+        ["manifest", "refresh", "--output", str(output_path), "--max-pages", "3"]
+    )
+
+    assert exit_code == 0
+    assert calls[0]["max_pages"] == 3
+
+
+def test_manifest_refresh_text_output_includes_concise_summary(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _patch_cli_manifest_refresh(monkeypatch)
+    output_path = tmp_path / "source_manifest.json"
+
+    exit_code = main(["manifest", "refresh", "--output", str(output_path)])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "reports discovered: 2" in captured.out
+    assert "reports normalized: 2" in captured.out
+    assert "reports written: 2" in captured.out
+    assert f"output path: {output_path}" in captured.out
+    assert "non-clean date confidence: 1" in captured.out
+
+
+def test_manifest_refresh_command_makes_no_live_network_calls(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_network(*args, **kwargs):
+        raise AssertionError("network calls are not allowed in CLI manifest tests")
+
+    monkeypatch.setattr(socket, "create_connection", fail_network)
+    monkeypatch.setattr(socket.socket, "connect", fail_network)
+    _patch_cli_manifest_refresh(monkeypatch)
+
+    exit_code = main(
+        ["manifest", "refresh", "--output", str(tmp_path / "source_manifest.json")]
+    )
+
+    assert exit_code == 0
 
 
 def test_discover_and_download_commands_make_no_live_network_calls(
@@ -525,6 +635,44 @@ def _patch_cli_downloader(
     return calls
 
 
+def _patch_cli_manifest_refresh(
+    monkeypatch: pytest.MonkeyPatch,
+    calls: list[dict[str, object]] | None = None,
+) -> None:
+    def fixture_refresh_source_manifest_with_result(
+        output_path: Path | None = None,
+        max_pages: int | None = None,
+        fetch_html: Callable[[str], str] | None = None,
+        dry_run: bool = False,
+    ) -> SourceManifestRefreshResult:
+        del fetch_html
+        manifest = _source_manifest()
+        manifest_path = Path(output_path) if output_path is not None else None
+        if calls is not None:
+            calls.append(
+                {
+                    "output_path": manifest_path,
+                    "max_pages": max_pages,
+                    "dry_run": dry_run,
+                }
+            )
+        if manifest_path is not None and not dry_run:
+            save_source_manifest(manifest, manifest_path)
+        return SourceManifestRefreshResult(
+            manifest=manifest,
+            raw_report_count=2,
+            normalized_report_count=len(manifest.reports),
+            output_path=manifest_path,
+            dry_run=dry_run,
+        )
+
+    monkeypatch.setattr(
+        tsa_throughput.cli,
+        "refresh_source_manifest_with_result",
+        fixture_refresh_source_manifest_with_result,
+    )
+
+
 def _fixture_fetcher(calls: list[str] | None = None) -> Callable[[str], str]:
     pages = {
         PAGE_0_URL: (FIXTURES_DIR / "tsa_reading_room_page_0.html").read_text(encoding="utf-8"),
@@ -546,6 +694,25 @@ def _fetcher(content: bytes, calls: list[str] | None = None) -> Callable[[str], 
         return content
 
     return fetch
+
+
+def _source_manifest() -> SourceManifest:
+    return SourceManifest(
+        schema_version=1,
+        generated_at="2026-06-08T00:00:00Z",
+        source_name="TSA FOIA Reading Room",
+        source_listing_url=PAGE_0_URL,
+        reports=[
+            _report(
+                canonical_id=NEWER_CANONICAL_ID,
+                week_start=date(2026, 6, 7),
+                week_end=date(2026, 6, 13),
+                canonical_filename="tsa-throughput-week-ending-2026-06-13.pdf",
+                date_confidence="title_url_conflict",
+            ),
+            _report(),
+        ],
+    )
 
 
 def _report(**overrides: object) -> ThroughputReport:

@@ -185,6 +185,7 @@ load_installed_source_manifest()
 load_source_manifest(path)
 save_source_manifest(manifest, path)
 create_source_manifest(reports, generated_at=None)
+refresh_source_manifest(output_path=None, max_pages=None, fetch_html=None, dry_run=False)
 list_source_reports(manifest=None)
 find_source_report(canonical_id, manifest=None)
 ```
@@ -209,6 +210,30 @@ The CLI uses this manifest for:
 ```bash
 tsa-throughput download --from-installed-manifest --output-dir data/raw
 ```
+
+The installed manifest is a known catalog of discovered TSA FOIA links, not a
+guarantee that the live TSA site or every linked PDF is currently available.
+
+Refresh behavior:
+
+1. Discover raw FOIA report links with `discover_report_links()`.
+2. Normalize and de-duplicate them with `normalize_report_links()`.
+3. Create a `SourceManifest` sorted by week ending date descending.
+4. Preserve alternate URLs and `date_confidence` values.
+5. Write stable indented JSON only when an output path is supplied and
+   `dry_run=False`.
+
+The CLI command is:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json
+```
+
+Only write to `src/tsa_throughput/assets/source_manifest.json` when intentionally
+refreshing the committed installed asset. Non-clean date confidence values,
+including `title_url_conflict`, should be reviewed before publishing. Default
+tests use injected or monkeypatched discovery and must not require live TSA
+network access.
 
 ## Local Storage
 
@@ -374,6 +399,7 @@ Implemented commands:
 ```bash
 tsa-throughput discover [--latest | --all | --max-pages N] [--format text|json]
 tsa-throughput download [--latest | --all | --max-pages N | --from-installed-manifest] --output-dir DIR [--overwrite]
+tsa-throughput manifest refresh --output JSON [--max-pages N] [--dry-run] [--format text|json]
 tsa-throughput parse PDF --output CSV [--max-pages N] [--parser NAME]
 tsa-throughput parse-all --input-dir DIR --output CSV [--pattern GLOB] [--max-pages N] [--parser NAME] [--continue-on-error]
 tsa-throughput parsers list

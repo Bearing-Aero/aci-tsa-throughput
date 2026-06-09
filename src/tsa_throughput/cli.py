@@ -34,7 +34,12 @@ from tsa_throughput.parsing.registry import (
     list_parsers,
     match_parser_manifest_entry,
 )
-from tsa_throughput.source_manifest import list_source_reports
+from tsa_throughput.source_manifest import (
+    SourceManifestRefreshResult,
+    list_source_reports,
+    refresh_source_manifest_with_result,
+    source_manifest_to_json,
+)
 from tsa_throughput.storage import LocalStorage
 
 CANONICAL_COLUMNS = [
@@ -119,6 +124,50 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Show tracebacks for package-specific errors.",
     )
     download_parser.set_defaults(handler=_handle_download)
+
+    manifest_parser = subparsers.add_parser(
+        "manifest",
+        help="Inspect or refresh source manifests.",
+    )
+    manifest_subparsers = manifest_parser.add_subparsers(
+        dest="manifest_command",
+        required=True,
+    )
+
+    manifest_refresh_parser = manifest_subparsers.add_parser(
+        "refresh",
+        help="Refresh a source manifest from TSA FOIA discovery.",
+    )
+    manifest_refresh_parser.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        type=Path,
+        help="Path where the refreshed source manifest JSON should be written.",
+    )
+    manifest_refresh_parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Discover reports from at most N listing pages.",
+    )
+    manifest_refresh_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run discovery and normalization without writing the output file.",
+    )
+    manifest_refresh_parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="Output format.",
+    )
+    manifest_refresh_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    manifest_refresh_parser.set_defaults(handler=_handle_manifest_refresh)
 
     parse_parser = subparsers.add_parser("parse", help="Parse a TSA throughput PDF to CSV.")
     parse_parser.add_argument("pdf_path", type=Path, help="Path to the source TSA PDF.")
@@ -348,6 +397,21 @@ def _handle_download(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_manifest_refresh(args: argparse.Namespace) -> int:
+    result = refresh_source_manifest_with_result(
+        output_path=Path(args.output),
+        max_pages=args.max_pages,
+        dry_run=args.dry_run,
+    )
+
+    if args.format == "json":
+        print(json.dumps(source_manifest_to_json(result.manifest), indent=2))
+    else:
+        _print_manifest_refresh_summary(result)
+
+    return 0
+
+
 def _discover_reports_for_args(args: argparse.Namespace) -> list[ThroughputReport]:
     raw_links = discover_report_links(max_pages=_listing_max_pages(args))
     return normalize_report_links(raw_links)
@@ -526,6 +590,29 @@ def _download_result_text_line(result: DownloadResult) -> str:
     if result.message:
         parts.append(_display_value(result.message))
     return "\t".join(parts)
+
+
+def _print_manifest_refresh_summary(result: SourceManifestRefreshResult) -> None:
+    non_clean_count = sum(
+        1
+        for report in result.manifest.reports
+        if report.date_confidence != "title_url_match"
+    )
+    written_count = (
+        0
+        if result.dry_run or result.output_path is None
+        else result.normalized_report_count
+    )
+
+    print("Source manifest refresh")
+    print(f"  reports discovered: {result.raw_report_count}")
+    print(f"  reports normalized: {result.normalized_report_count}")
+    print(f"  reports written: {written_count}")
+    if result.dry_run:
+        print("  output path: dry run")
+    elif result.output_path is not None:
+        print(f"  output path: {result.output_path}")
+    print(f"  non-clean date confidence: {non_clean_count}")
 
 
 def _print_parse_all_summary(result: BatchParseResult, output_path: Path) -> None:

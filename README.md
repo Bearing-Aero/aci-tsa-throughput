@@ -115,6 +115,12 @@ Download the latest discovered reports into local storage:
 tsa-throughput download --latest --output-dir data/raw
 ```
 
+Refresh a source manifest from TSA FOIA discovery results:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json
+```
+
 Parse one downloaded PDF to CSV:
 
 ```bash
@@ -166,6 +172,37 @@ Text output is tab-separated:
 ```text
 canonical_id  week_start  week_end  source_filename  date_confidence  source_url
 ```
+
+### Refresh the Source Manifest
+
+Refresh a source manifest from TSA FOIA discovery results:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json
+```
+
+Limit discovery to a fixed number of listing pages:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json --max-pages 3
+```
+
+Run discovery and normalization without writing a file:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json --dry-run
+```
+
+Print the generated manifest JSON to stdout:
+
+```bash
+tsa-throughput manifest refresh --output source_manifest.json --format json
+```
+
+Only pass `src/tsa_throughput/assets/source_manifest.json` as `--output` when
+you intentionally want to refresh the committed installed manifest. Review any
+non-clean `date_confidence` values such as `title_url_conflict` before
+publishing a refreshed manifest.
 
 ### Download Reports
 
@@ -341,6 +378,18 @@ print(manifest.generated_at)
 print(reports[0].canonical_filename)
 ```
 
+### Refresh a Source Manifest
+
+```python
+from pathlib import Path
+
+from tsa_throughput.source_manifest import refresh_source_manifest
+
+manifest = refresh_source_manifest(output_path=Path("source_manifest.json"), max_pages=3)
+
+print(len(manifest.reports))
+```
+
 ### Download Missing Reports
 
 ```python
@@ -477,6 +526,11 @@ It stores known TSA report metadata:
 
 Use `tsa-throughput download --from-installed-manifest` when you want to download
 from this packaged catalog instead of scraping the live listing first.
+
+The installed source manifest is a known catalog of TSA FOIA report links, not a
+guarantee that the live TSA site is reachable or that every linked PDF is
+currently available. Refresh tests use fixtures or monkeypatched discovery and
+should not require live TSA network access.
 
 ### Runtime Download Manifest
 
