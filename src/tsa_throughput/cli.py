@@ -13,7 +13,12 @@ from typing import Any
 
 from tsa_throughput.exceptions import ParseError, TSAThroughputError
 from tsa_throughput.models import ThroughputRecord, ThroughputReport
-from tsa_throughput.parsing.registry import get_parser
+from tsa_throughput.parsing.registry import (
+    ParserManifestEntry,
+    get_parser,
+    list_parsers,
+    match_parser_manifest_entry,
+)
 
 CANONICAL_COLUMNS = [
     "throughput_date",
@@ -85,6 +90,45 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parse_parser.set_defaults(handler=_handle_parse)
 
+    parsers_parser = subparsers.add_parser(
+        "parsers",
+        help="Inspect available parser plugins.",
+    )
+    parsers_subparsers = parsers_parser.add_subparsers(dest="parsers_command", required=True)
+
+    parsers_list_parser = parsers_subparsers.add_parser(
+        "list",
+        help="List parser plugins from the installed manifest.",
+    )
+    parsers_list_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    parsers_list_parser.set_defaults(handler=_handle_parsers_list)
+
+    parsers_match_parser = parsers_subparsers.add_parser(
+        "match",
+        help="Show which parser would match a report week ending date.",
+    )
+    parsers_match_parser.add_argument(
+        "--week-ending",
+        required=True,
+        help="Report week ending date in YYYY-MM-DD format.",
+    )
+    parsers_match_parser.add_argument(
+        "--pdf-path",
+        type=Path,
+        default=None,
+        help="Optional PDF path to validate with parser can_parse() behavior.",
+    )
+    parsers_match_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show tracebacks for package-specific errors.",
+    )
+    parsers_match_parser.set_defaults(handler=_handle_parsers_match)
+
     return parser
 
 
@@ -107,6 +151,72 @@ def _handle_parse(args: argparse.Namespace) -> int:
 
     print(f"Parsed {result.record_count} records to {output_path}")
     return 0
+
+
+def _handle_parsers_list(args: argparse.Namespace) -> int:
+    del args
+
+    entries = list_parsers()
+    for index, entry in enumerate(entries):
+        if index:
+            print()
+        _print_parser_entry(entry)
+
+    return 0
+
+
+def _handle_parsers_match(args: argparse.Namespace) -> int:
+    week_end = _parse_iso_date(args.week_ending, field_name="week-ending")
+
+    if args.pdf_path is None:
+        entry = match_parser_manifest_entry(week_end)
+    else:
+        pdf_path = Path(args.pdf_path)
+        if not pdf_path.is_file():
+            raise ParseError(f"PDF path does not exist or is not a file: {pdf_path}")
+
+        report = ThroughputReport(
+            source_url="",
+            week_end=week_end,
+            original_filename=pdf_path.name,
+        )
+        selected_parser = get_parser(report, pdf_path)
+        entry = _find_parser_entry(selected_parser.parser_name)
+
+    print("Selected parser:")
+    _print_parser_entry(entry)
+    return 0
+
+
+def _find_parser_entry(parser_name: str) -> ParserManifestEntry:
+    for entry in list_parsers():
+        if entry.name == parser_name:
+            return entry
+    raise ParseError(f"selected parser is missing from parser manifest: {parser_name}")
+
+
+def _print_parser_entry(entry: ParserManifestEntry) -> None:
+    print(entry.name)
+    print(f"  layout_family: {_display_value(entry.layout_family)}")
+    print(f"  valid_from: {_display_value(entry.valid_from)}")
+    print(f"  valid_to: {_display_value(entry.valid_to)}")
+    print(f"  priority: {entry.priority}")
+    print(f"  description: {_display_value(entry.description)}")
+
+
+def _parse_iso_date(value: str, *, field_name: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise ParseError(f"{field_name} must be a valid YYYY-MM-DD date: {value}") from exc
+
+
+def _display_value(value: object | None) -> str:
+    if value is None:
+        return "None"
+    if isinstance(value, date):
+        return value.isoformat()
+    return str(value)
 
 
 def _record_to_row(record: ThroughputRecord) -> dict[str, str]:

@@ -2,6 +2,9 @@ import csv
 import socket
 from pathlib import Path
 
+import pytest
+
+import tsa_throughput.cli
 from tsa_throughput.cli import CANONICAL_COLUMNS, main
 from tsa_throughput.parsing.plugins.modern_total_pax_kcm_hourly_checkpoint_pdfplumber import (
     PARSER_NAME,
@@ -143,3 +146,96 @@ def test_parse_command_does_not_make_network_calls(tmp_path: Path, monkeypatch) 
 
     assert exit_code == 0
     assert output_path.is_file()
+
+
+def test_parsers_list_command_exits_successfully(capsys) -> None:
+    exit_code = main(["parsers", "list"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PARSER_NAME in captured.out
+
+
+def test_parsers_list_output_includes_modern_parser_metadata(capsys) -> None:
+    exit_code = main(["parsers", "list"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PARSER_NAME in captured.out
+    assert "hourly_checkpoint_total_pax_kcm" in captured.out
+
+
+def test_parsers_match_command_exits_successfully(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2026-06-06"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PARSER_NAME in captured.out
+
+
+def test_parsers_match_outside_coverage_exits_nonzero(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2025-12-31"])
+
+    assert exit_code != 0
+    captured = capsys.readouterr()
+    assert "no parser found" in captured.err
+
+
+def test_parsers_match_with_pdf_path_exits_successfully(capsys) -> None:
+    exit_code = main(
+        [
+            "parsers",
+            "match",
+            "--week-ending",
+            "2026-06-06",
+            "--pdf-path",
+            str(FIXTURE_PDF),
+        ]
+    )
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PARSER_NAME in captured.out
+
+
+def test_parsers_match_missing_pdf_path_exits_nonzero(tmp_path: Path, capsys) -> None:
+    exit_code = main(
+        [
+            "parsers",
+            "match",
+            "--week-ending",
+            "2026-06-06",
+            "--pdf-path",
+            str(tmp_path / "missing.pdf"),
+        ]
+    )
+
+    assert exit_code != 0
+    captured = capsys.readouterr()
+    assert "PDF path does not exist" in captured.err
+
+
+def test_debug_preserves_unexpected_traceback_behavior(monkeypatch) -> None:
+    def fail_unexpected(args):
+        raise RuntimeError("unexpected parser inspection failure")
+
+    monkeypatch.setattr(tsa_throughput.cli, "_handle_parsers_list", fail_unexpected)
+
+    with pytest.raises(RuntimeError, match="unexpected parser inspection failure"):
+        main(["parsers", "list", "--debug"])
+
+
+def test_parsers_commands_do_not_make_network_calls(monkeypatch, capsys) -> None:
+    def fail_network(*args, **kwargs):
+        raise AssertionError("network calls are not allowed in parser inspection tests")
+
+    monkeypatch.setattr(socket, "create_connection", fail_network)
+    monkeypatch.setattr(socket.socket, "connect", fail_network)
+
+    list_exit_code = main(["parsers", "list"])
+    match_exit_code = main(["parsers", "match", "--week-ending", "2026-06-06"])
+
+    assert list_exit_code == 0
+    assert match_exit_code == 0
+    captured = capsys.readouterr()
+    assert PARSER_NAME in captured.out

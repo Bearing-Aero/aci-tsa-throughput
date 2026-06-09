@@ -95,6 +95,22 @@ def list_parsers(path: Path | None = None) -> list[ParserManifestEntry]:
     return [ParserManifestEntry.from_manifest(entry) for entry in manifest["parsers"]]
 
 
+def match_parser_manifest_entry(
+    week_end: date,
+    path: Path | None = None,
+) -> ParserManifestEntry:
+    """Return the highest-priority parser manifest entry for a report week end date."""
+    candidates = [
+        entry for entry in list_parsers(path) if entry.is_valid_for_week_end(week_end)
+    ]
+    candidates = sorted(candidates, key=lambda entry: entry.priority, reverse=True)
+
+    if not candidates:
+        raise ParserNotFoundError(f"no parser found for report week_end={week_end.isoformat()}")
+
+    return candidates[0]
+
+
 def get_parser(
     report: ThroughputReport,
     pdf_path: Path,
