@@ -1,0 +1,4216 @@
+{
+  "pdf_path": "tsa-throughput-data-to-may-31-2026-to-june-6-2026.pdf",
+  "pages": [
+    {
+      "page_number": 1,
+      "width": 612,
+      "height": 792,
+      "char_count": 1965,
+      "line_count": 65,
+      "rect_count": 236,
+      "curve_count": 0,
+      "text_preview_path": "inspection_2026/page_001_text.txt",
+      "presets": {
+        "default": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                2,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "ANC",
+                  "Ted Stevens Anchorage International",
+                  "Anchorage",
+                  "AK",
+                  "South Checkpoint",
+                  "208"
+                ],
+                [
+                  null,
+                  null,
+                  "ATL",
+                  "Hartsfield - Jackson Atlanta International",
+                  "Atlanta",
+                  "GA",
+                  "F Arrival Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Main Checkpoint",
+                  "79"
+                ],
+                [
+                  null,
+                  null,
+                  "BOS",
+                  "General Edward Lawrence Logan International",
+                  "East Boston",
+                  "MA",
+                  "A1",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B1",
+                  "3"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B5",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "C2",
+                  "5"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "E3",
+                  "124"
+                ],
+                [
+                  null,
+                  null,
+                  "BQN",
+                  "Rafael Hernandez",
+                  "Aguadilla",
+                  "PR",
+                  "Rafael Hernandez Air",
+                  "59"
+                ],
+                [
+                  null,
+                  null,
+                  "BTV",
+                  "Burlington International",
+                  "South Burlington",
+                  "VT",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "BWI",
+                  "Baltimore/Washington International Thurgood Marshall",
+                  "BWI Airport",
+                  "MD",
+                  "B Checkpoint",
+                  "5"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_default_table_01.csv"
+            }
+          ]
+        },
+        "lines": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                2,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "ANC",
+                  "Ted Stevens Anchorage International",
+                  "Anchorage",
+                  "AK",
+                  "South Checkpoint",
+                  "208"
+                ],
+                [
+                  null,
+                  null,
+                  "ATL",
+                  "Hartsfield - Jackson Atlanta International",
+                  "Atlanta",
+                  "GA",
+                  "F Arrival Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Main Checkpoint",
+                  "79"
+                ],
+                [
+                  null,
+                  null,
+                  "BOS",
+                  "General Edward Lawrence Logan International",
+                  "East Boston",
+                  "MA",
+                  "A1",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B1",
+                  "3"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B5",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "C2",
+                  "5"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "E3",
+                  "124"
+                ],
+                [
+                  null,
+                  null,
+                  "BQN",
+                  "Rafael Hernandez",
+                  "Aguadilla",
+                  "PR",
+                  "Rafael Hernandez Air",
+                  "59"
+                ],
+                [
+                  null,
+                  null,
+                  "BTV",
+                  "Burlington International",
+                  "South Burlington",
+                  "VT",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "BWI",
+                  "Baltimore/Washington International Thurgood Marshall",
+                  "BWI Airport",
+                  "MD",
+                  "B Checkpoint",
+                  "5"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_lines_table_01.csv"
+            }
+          ]
+        },
+        "lines_strict": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                2,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "ANC",
+                  "Ted Stevens Anchorage International",
+                  "Anchorage",
+                  "AK",
+                  "South Checkpoint",
+                  "208"
+                ],
+                [
+                  null,
+                  null,
+                  "ATL",
+                  "Hartsfield - Jackson Atlanta International",
+                  "Atlanta",
+                  "GA",
+                  "F Arrival Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Main Checkpoint",
+                  "79"
+                ],
+                [
+                  null,
+                  null,
+                  "BOS",
+                  "General Edward Lawrence Logan International",
+                  "East Boston",
+                  "MA",
+                  "A1",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B1",
+                  "3"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B5",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "C2",
+                  "5"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "E3",
+                  "124"
+                ],
+                [
+                  null,
+                  null,
+                  "BQN",
+                  "Rafael Hernandez",
+                  "Aguadilla",
+                  "PR",
+                  "Rafael Hernandez Air",
+                  "59"
+                ],
+                [
+                  null,
+                  null,
+                  "BTV",
+                  "Burlington International",
+                  "South Burlington",
+                  "VT",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "BWI",
+                  "Baltimore/Washington International Thurgood Marshall",
+                  "BWI Airport",
+                  "MD",
+                  "B Checkpoint",
+                  "5"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_lines_strict_table_01.csv"
+            }
+          ]
+        },
+        "text": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 104,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                3,
+                6,
+                0,
+                2,
+                4,
+                2,
+                0,
+                2,
+                0,
+                2,
+                0,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "KC PA",
+                  "M X"
+                ],
+                [
+                  null,
+                  "ANC",
+                  "Ted Stevens Anchorage International",
+                  "Anchorage",
+                  "AK",
+                  "South Checkpoint",
+                  null,
+                  "208"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "F Arrival Checkpoint",
+                  null,
+                  "4"
+                ],
+                [
+                  null,
+                  "ATL",
+                  "Hartsfield - Jackson Atlanta International",
+                  "Atlanta",
+                  "GA",
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Main Checkpoint",
+                  null,
+                  "79"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "A1",
+                  null,
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B1",
+                  null,
+                  "3"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "BOS",
+                  "General Edward Lawrence Logan International",
+                  "East Boston",
+                  "MA",
+                  "B5",
+                  null,
+                  "2"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_text_table_01.csv"
+            }
+          ]
+        },
+        "mixed_vertical_lines_horizontal_text": {
+          "table_count": 2,
+          "tables": [
+            {
+              "row_count": 3,
+              "min_columns": 3,
+              "max_columns": 3,
+              "row_lengths_sample": [
+                3,
+                3,
+                3
+              ],
+              "non_empty_counts_sample": [
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "TSA Total Throughput",
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "6/8/2026",
+                  null
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_mixed_vertical_lines_horizontal_text_table_01.csv"
+            },
+            {
+              "row_count": 104,
+              "min_columns": 6,
+              "max_columns": 6,
+              "row_lengths_sample": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "non_empty_counts_sample": [
+                1,
+                5,
+                0,
+                1,
+                4,
+                1,
+                0,
+                1,
+                0,
+                1,
+                0,
+                5
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "ANC",
+                  "Ted Stevens Anchorage International",
+                  "Anchorage",
+                  "AK",
+                  "South Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "F Arrival Checkpoint"
+                ],
+                [
+                  null,
+                  "ATL",
+                  "Hartsfield - Jackson Atlanta International",
+                  "Atlanta",
+                  "GA",
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Main Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "A1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "BOS",
+                  "General Edward Lawrence Logan International",
+                  "East Boston",
+                  "MA",
+                  "B5"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_001_mixed_vertical_lines_horizontal_text_table_02.csv"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "page_number": 2,
+      "width": 612,
+      "height": 792,
+      "char_count": 2261,
+      "line_count": 65,
+      "rect_count": 253,
+      "curve_count": 0,
+      "text_preview_path": "inspection_2026/page_002_text.txt",
+      "presets": {
+        "default": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                2,
+                6,
+                6,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "32"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "74"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "56"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint B",
+                  "25"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint D",
+                  "6"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint F-1",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "52"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_default_table_01.csv"
+            }
+          ]
+        },
+        "lines": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                2,
+                6,
+                6,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "32"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "74"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "56"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint B",
+                  "25"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint D",
+                  "6"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint F-1",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "52"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_lines_table_01.csv"
+            }
+          ]
+        },
+        "lines_strict": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                2,
+                6,
+                6,
+                6,
+                2,
+                2,
+                2,
+                2,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "00:00",
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "32"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "74"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "56"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint B",
+                  "25"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint D",
+                  "6"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint F-1",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "52"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_lines_strict_table_01.csv"
+            }
+          ]
+        },
+        "text": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 104,
+              "min_columns": 10,
+              "max_columns": 10,
+              "row_lengths_sample": [
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10
+              ],
+              "non_empty_counts_sample": [
+                3,
+                2,
+                5,
+                2,
+                0,
+                7,
+                0,
+                7,
+                0,
+                3,
+                0,
+                3
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "KC PA",
+                  "M X"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North",
+                  null,
+                  null,
+                  "1"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor Interna",
+                  "tional",
+                  "Phoenix",
+                  "AZ",
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  null,
+                  null,
+                  "32"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  null,
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoi",
+                  "nt",
+                  null,
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma Internationa",
+                  "l",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  null,
+                  null,
+                  "74"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint",
+                  "A",
+                  null,
+                  "56"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint",
+                  "B",
+                  null,
+                  "25"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_text_table_01.csv"
+            }
+          ]
+        },
+        "mixed_vertical_lines_horizontal_text": {
+          "table_count": 2,
+          "tables": [
+            {
+              "row_count": 3,
+              "min_columns": 3,
+              "max_columns": 3,
+              "row_lengths_sample": [
+                3,
+                3,
+                3
+              ],
+              "non_empty_counts_sample": [
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "TSA Total Throughput",
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "6/8/2026",
+                  null
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_mixed_vertical_lines_horizontal_text_table_01.csv"
+            },
+            {
+              "row_count": 104,
+              "min_columns": 6,
+              "max_columns": 6,
+              "row_lengths_sample": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "non_empty_counts_sample": [
+                1,
+                1,
+                4,
+                1,
+                0,
+                5,
+                0,
+                5,
+                0,
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint A"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint B"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_002_mixed_vertical_lines_horizontal_text_table_02.csv"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "page_number": 3,
+      "width": 612,
+      "height": 792,
+      "char_count": 2150,
+      "line_count": 65,
+      "rect_count": 249,
+      "curve_count": 0,
+      "text_preview_path": "inspection_2026/page_003_text.txt",
+      "presets": {
+        "default": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "01:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "39"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "24"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "29"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "258"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_default_table_01.csv"
+            }
+          ]
+        },
+        "lines": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "01:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "39"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "24"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "29"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "258"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_lines_table_01.csv"
+            }
+          ]
+        },
+        "lines_strict": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "01:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "39"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "24"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "29"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Security Checkpoint G",
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "258"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_lines_strict_table_01.csv"
+            }
+          ]
+        },
+        "text": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 104,
+              "min_columns": 9,
+              "max_columns": 9,
+              "row_lengths_sample": [
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9
+              ],
+              "non_empty_counts_sample": [
+                3,
+                7,
+                0,
+                6,
+                0,
+                2,
+                5,
+                2,
+                0,
+                6,
+                0,
+                8
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "KC PA",
+                  "M X"
+                ],
+                [
+                  null,
+                  "ORD",
+                  "Chicago O'Hare Internationa",
+                  "l",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  null,
+                  "39"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "PDX",
+                  "Portland International",
+                  null,
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  null,
+                  "4"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North",
+                  null,
+                  "0"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor Interna",
+                  "tional",
+                  "Phoenix",
+                  "AZ",
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  null,
+                  "10"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  null,
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  null,
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  "01:00",
+                  "SEA",
+                  "Seattle-Tacoma Internationa",
+                  "l",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  null,
+                  "24"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_text_table_01.csv"
+            }
+          ]
+        },
+        "mixed_vertical_lines_horizontal_text": {
+          "table_count": 2,
+          "tables": [
+            {
+              "row_count": 3,
+              "min_columns": 3,
+              "max_columns": 3,
+              "row_lengths_sample": [
+                3,
+                3,
+                3
+              ],
+              "non_empty_counts_sample": [
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "TSA Total Throughput",
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "6/8/2026",
+                  null
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_mixed_vertical_lines_horizontal_text_table_01.csv"
+            },
+            {
+              "row_count": 104,
+              "min_columns": 6,
+              "max_columns": 6,
+              "row_lengths_sample": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "non_empty_counts_sample": [
+                1,
+                5,
+                0,
+                5,
+                0,
+                1,
+                4,
+                1,
+                0,
+                5,
+                0,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  "01:00",
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_003_mixed_vertical_lines_horizontal_text_table_02.csv"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "page_number": 4,
+      "width": 612,
+      "height": 792,
+      "char_count": 2389,
+      "line_count": 65,
+      "rect_count": 277,
+      "curve_count": 0,
+      "text_preview_path": "inspection_2026/page_004_text.txt",
+      "presets": {
+        "default": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                7
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "02:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "44"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "14"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "47"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "43"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "236"
+                ],
+                [
+                  null,
+                  "03:00",
+                  "ABE",
+                  "Lehigh Valley International",
+                  "Allentown",
+                  "PA",
+                  "ABE Main Terminal",
+                  "15"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_default_table_01.csv"
+            }
+          ]
+        },
+        "lines": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                7
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "02:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "44"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "14"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "47"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "43"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "236"
+                ],
+                [
+                  null,
+                  "03:00",
+                  "ABE",
+                  "Lehigh Valley International",
+                  "Allentown",
+                  "PA",
+                  "ABE Main Terminal",
+                  "15"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_lines_table_01.csv"
+            }
+          ]
+        },
+        "lines_strict": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                7
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "02:00",
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  "44"
+                ],
+                [
+                  null,
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  "14"
+                ],
+                [
+                  null,
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  "T-3 North",
+                  "45"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  "47"
+                ],
+                [
+                  null,
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  "43"
+                ],
+                [
+                  null,
+                  null,
+                  "SFO",
+                  "San Francisco International",
+                  "San Francisco",
+                  "CA",
+                  "Security Checkpoint A",
+                  "2"
+                ],
+                [
+                  null,
+                  null,
+                  "SGF",
+                  "Springfield-Branson National",
+                  "Springfield",
+                  "MO",
+                  "Main Checkpoint",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJC",
+                  "Norman Y Mineta San Jose International",
+                  "San Jose",
+                  "CA",
+                  "Terminal A",
+                  "0"
+                ],
+                [
+                  null,
+                  null,
+                  "SJU",
+                  "Luis Munoz Marin International",
+                  "San Juan",
+                  "PR",
+                  "Checkpoint BC",
+                  "236"
+                ],
+                [
+                  null,
+                  "03:00",
+                  "ABE",
+                  "Lehigh Valley International",
+                  "Allentown",
+                  "PA",
+                  "ABE Main Terminal",
+                  "15"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_lines_strict_table_01.csv"
+            }
+          ]
+        },
+        "text": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 104,
+              "min_columns": 9,
+              "max_columns": 9,
+              "row_lengths_sample": [
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9
+              ],
+              "non_empty_counts_sample": [
+                3,
+                7,
+                0,
+                6,
+                0,
+                2,
+                5,
+                2,
+                0,
+                6,
+                1,
+                7
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "KC PA",
+                  "M X"
+                ],
+                [
+                  null,
+                  "ORD",
+                  "Chicago O'Hare Internatio",
+                  "nal",
+                  "Chicago",
+                  "IL",
+                  "4B",
+                  null,
+                  "44"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "PDX",
+                  "Portland International",
+                  null,
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint",
+                  null,
+                  "14"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North",
+                  null,
+                  "45"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor Intern",
+                  "ational",
+                  "Phoenix",
+                  "AZ",
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A",
+                  null,
+                  "47"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  null,
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint",
+                  null,
+                  "0"
+                ],
+                [
+                  "02:00",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma Internatio",
+                  "nal",
+                  "Seattle",
+                  "WA",
+                  "SCP 4",
+                  null,
+                  "43"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_text_table_01.csv"
+            }
+          ]
+        },
+        "mixed_vertical_lines_horizontal_text": {
+          "table_count": 2,
+          "tables": [
+            {
+              "row_count": 3,
+              "min_columns": 3,
+              "max_columns": 3,
+              "row_lengths_sample": [
+                3,
+                3,
+                3
+              ],
+              "non_empty_counts_sample": [
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "TSA Total Throughput",
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "6/8/2026",
+                  null
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_mixed_vertical_lines_horizontal_text_table_01.csv"
+            },
+            {
+              "row_count": 104,
+              "min_columns": 6,
+              "max_columns": 6,
+              "row_lengths_sample": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "non_empty_counts_sample": [
+                1,
+                5,
+                0,
+                5,
+                0,
+                1,
+                4,
+                1,
+                0,
+                5,
+                1,
+                5
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "ORD",
+                  "Chicago O'Hare International",
+                  "Chicago",
+                  "IL",
+                  "4B"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "PDX",
+                  "Portland International",
+                  "Portland",
+                  "OR",
+                  "DE Checkpoint"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-3 North"
+                ],
+                [
+                  null,
+                  "PHX",
+                  "Phoenix Sky Harbor International",
+                  "Phoenix",
+                  "AZ",
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "T-4 A"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SAN",
+                  "San Diego International",
+                  "San Diego",
+                  "CA",
+                  "Terminal 1 Checkpoint"
+                ],
+                [
+                  "02:00",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "SEA",
+                  "Seattle-Tacoma International",
+                  "Seattle",
+                  "WA",
+                  "SCP 4"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_004_mixed_vertical_lines_horizontal_text_table_02.csv"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "page_number": 5,
+      "width": 612,
+      "height": 792,
+      "char_count": 1926,
+      "line_count": 65,
+      "rect_count": 248,
+      "curve_count": 0,
+      "text_preview_path": "inspection_2026/page_005_text.txt",
+      "presets": {
+        "default": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                2,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "03:00",
+                  "CLE",
+                  "Cleveland-Hopkins International",
+                  "Cleveland",
+                  "OH",
+                  "South",
+                  "145"
+                ],
+                [
+                  null,
+                  null,
+                  "CLL",
+                  "Easterwood Field",
+                  "College Station",
+                  "TX",
+                  "CLL01",
+                  "40"
+                ],
+                [
+                  null,
+                  null,
+                  "CLT",
+                  "Charlotte/Douglas International",
+                  "Charlotte",
+                  "NC",
+                  "Checkpoint 1",
+                  "224"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 2",
+                  "188"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 3",
+                  "127"
+                ],
+                [
+                  null,
+                  null,
+                  "CMH",
+                  "John Glenn Columbus International",
+                  "Columbus",
+                  "OH",
+                  "A",
+                  "176"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B",
+                  "87"
+                ],
+                [
+                  null,
+                  null,
+                  "COS",
+                  "City Of Colorado Springs Municipal",
+                  "Colorado Springs",
+                  "CO",
+                  "COS Checkpoint",
+                  "33"
+                ],
+                [
+                  null,
+                  null,
+                  "CRP",
+                  "Corpus Christi International",
+                  "Corpus Christi",
+                  "TX",
+                  "CRP01",
+                  "18"
+                ],
+                [
+                  null,
+                  null,
+                  "CVG",
+                  "Cincinnati/Northern Kentucky International",
+                  "Hebron",
+                  "KY",
+                  "T3-MCP",
+                  "277"
+                ],
+                [
+                  null,
+                  null,
+                  "DAL",
+                  "Dallas Love Field",
+                  "Dallas",
+                  "TX",
+                  "Checkpoint",
+                  "162"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_default_table_01.csv"
+            }
+          ]
+        },
+        "lines": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                2,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "03:00",
+                  "CLE",
+                  "Cleveland-Hopkins International",
+                  "Cleveland",
+                  "OH",
+                  "South",
+                  "145"
+                ],
+                [
+                  null,
+                  null,
+                  "CLL",
+                  "Easterwood Field",
+                  "College Station",
+                  "TX",
+                  "CLL01",
+                  "40"
+                ],
+                [
+                  null,
+                  null,
+                  "CLT",
+                  "Charlotte/Douglas International",
+                  "Charlotte",
+                  "NC",
+                  "Checkpoint 1",
+                  "224"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 2",
+                  "188"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 3",
+                  "127"
+                ],
+                [
+                  null,
+                  null,
+                  "CMH",
+                  "John Glenn Columbus International",
+                  "Columbus",
+                  "OH",
+                  "A",
+                  "176"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B",
+                  "87"
+                ],
+                [
+                  null,
+                  null,
+                  "COS",
+                  "City Of Colorado Springs Municipal",
+                  "Colorado Springs",
+                  "CO",
+                  "COS Checkpoint",
+                  "33"
+                ],
+                [
+                  null,
+                  null,
+                  "CRP",
+                  "Corpus Christi International",
+                  "Corpus Christi",
+                  "TX",
+                  "CRP01",
+                  "18"
+                ],
+                [
+                  null,
+                  null,
+                  "CVG",
+                  "Cincinnati/Northern Kentucky International",
+                  "Hebron",
+                  "KY",
+                  "T3-MCP",
+                  "277"
+                ],
+                [
+                  null,
+                  null,
+                  "DAL",
+                  "Dallas Love Field",
+                  "Dallas",
+                  "TX",
+                  "Checkpoint",
+                  "162"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_lines_table_01.csv"
+            }
+          ]
+        },
+        "lines_strict": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 53,
+              "min_columns": 8,
+              "max_columns": 8,
+              "row_lengths_sample": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "non_empty_counts_sample": [
+                7,
+                8,
+                6,
+                6,
+                2,
+                2,
+                6,
+                2,
+                6,
+                6,
+                6,
+                6
+              ],
+              "first_rows": [
+                [
+                  "Date",
+                  "Hour of Day",
+                  "Airport",
+                  null,
+                  "City",
+                  "State",
+                  "Checkpoint",
+                  "Total Pax + KCM PAX"
+                ],
+                [
+                  "5/31/2026",
+                  "03:00",
+                  "CLE",
+                  "Cleveland-Hopkins International",
+                  "Cleveland",
+                  "OH",
+                  "South",
+                  "145"
+                ],
+                [
+                  null,
+                  null,
+                  "CLL",
+                  "Easterwood Field",
+                  "College Station",
+                  "TX",
+                  "CLL01",
+                  "40"
+                ],
+                [
+                  null,
+                  null,
+                  "CLT",
+                  "Charlotte/Douglas International",
+                  "Charlotte",
+                  "NC",
+                  "Checkpoint 1",
+                  "224"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 2",
+                  "188"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 3",
+                  "127"
+                ],
+                [
+                  null,
+                  null,
+                  "CMH",
+                  "John Glenn Columbus International",
+                  "Columbus",
+                  "OH",
+                  "A",
+                  "176"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "B",
+                  "87"
+                ],
+                [
+                  null,
+                  null,
+                  "COS",
+                  "City Of Colorado Springs Municipal",
+                  "Colorado Springs",
+                  "CO",
+                  "COS Checkpoint",
+                  "33"
+                ],
+                [
+                  null,
+                  null,
+                  "CRP",
+                  "Corpus Christi International",
+                  "Corpus Christi",
+                  "TX",
+                  "CRP01",
+                  "18"
+                ],
+                [
+                  null,
+                  null,
+                  "CVG",
+                  "Cincinnati/Northern Kentucky International",
+                  "Hebron",
+                  "KY",
+                  "T3-MCP",
+                  "277"
+                ],
+                [
+                  null,
+                  null,
+                  "DAL",
+                  "Dallas Love Field",
+                  "Dallas",
+                  "TX",
+                  "Checkpoint",
+                  "162"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_lines_strict_table_01.csv"
+            }
+          ]
+        },
+        "text": {
+          "table_count": 1,
+          "tables": [
+            {
+              "row_count": 104,
+              "min_columns": 10,
+              "max_columns": 10,
+              "row_lengths_sample": [
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10
+              ],
+              "non_empty_counts_sample": [
+                4,
+                7,
+                0,
+                6,
+                0,
+                2,
+                0,
+                7,
+                0,
+                2,
+                0,
+                2
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "K P",
+                  "C A",
+                  "M X"
+                ],
+                [
+                  null,
+                  "CLE",
+                  "Cleveland-Hopkins",
+                  "International",
+                  "Cleveland",
+                  "OH",
+                  "South",
+                  null,
+                  null,
+                  "145"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "CLL",
+                  "Easterwood Field",
+                  null,
+                  "College Station",
+                  "TX",
+                  "CLL01",
+                  null,
+                  null,
+                  "40"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 1",
+                  null,
+                  null,
+                  "224"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "CLT",
+                  "Charlotte/Douglas I",
+                  "nternational",
+                  "Charlotte",
+                  "NC",
+                  "Checkpoint 2",
+                  null,
+                  null,
+                  "188"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 3",
+                  null,
+                  null,
+                  "127"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "A",
+                  null,
+                  null,
+                  "176"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_text_table_01.csv"
+            }
+          ]
+        },
+        "mixed_vertical_lines_horizontal_text": {
+          "table_count": 2,
+          "tables": [
+            {
+              "row_count": 3,
+              "min_columns": 3,
+              "max_columns": 3,
+              "row_lengths_sample": [
+                3,
+                3,
+                3
+              ],
+              "non_empty_counts_sample": [
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "TSA Total Throughput",
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "6/8/2026",
+                  null
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_mixed_vertical_lines_horizontal_text_table_01.csv"
+            },
+            {
+              "row_count": 104,
+              "min_columns": 6,
+              "max_columns": 6,
+              "row_lengths_sample": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "non_empty_counts_sample": [
+                1,
+                5,
+                0,
+                5,
+                0,
+                1,
+                0,
+                5,
+                0,
+                1,
+                0,
+                1
+              ],
+              "first_rows": [
+                [
+                  "Day",
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "CLE",
+                  "Cleveland-Hopkins International",
+                  "Cleveland",
+                  "OH",
+                  "South"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "CLL",
+                  "Easterwood Field",
+                  "College Station",
+                  "TX",
+                  "CLL01"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 1"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  "CLT",
+                  "Charlotte/Douglas International",
+                  "Charlotte",
+                  "NC",
+                  "Checkpoint 2"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "Checkpoint 3"
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null
+                ],
+                [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "A"
+                ]
+              ],
+              "csv_path": "inspection_2026/page_005_mixed_vertical_lines_horizontal_text_table_02.csv"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "table_settings_presets": [
+    "default",
+    "lines",
+    "lines_strict",
+    "text",
+    "mixed_vertical_lines_horizontal_text"
+  ],
+  "total_pages": 987,
+  "pages_processed": 5
+}
