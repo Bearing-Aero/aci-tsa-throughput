@@ -43,6 +43,9 @@ PMIS_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
 ).PARSER_NAME
+LEGACY_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber"
+).PARSER_NAME
 MARCH_2022_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
@@ -558,6 +561,7 @@ def test_parsers_list_output_includes_modern_parser_metadata(capsys) -> None:
     assert HISTORICAL_PARSER_NAME in captured.out
     assert STRICT_HISTORICAL_PARSER_NAME in captured.out
     assert PMIS_PARSER_NAME in captured.out
+    assert LEGACY_PMIS_PARSER_NAME in captured.out
     assert MARCH_2022_PARSER_NAME in captured.out
     assert "hourly_checkpoint_total_pax_kcm" in captured.out
 
@@ -571,7 +575,7 @@ def test_parsers_match_command_exits_successfully(capsys) -> None:
 
 
 def test_parsers_match_outside_coverage_exits_nonzero(capsys) -> None:
-    exit_code = main(["parsers", "match", "--week-ending", "2022-02-26"])
+    exit_code = main(["parsers", "match", "--week-ending", "2018-06-30"])
 
     assert exit_code != 0
     captured = capsys.readouterr()
@@ -600,6 +604,22 @@ def test_parsers_match_selects_pmis_parser(capsys) -> None:
     assert exit_code == 0
     captured = capsys.readouterr()
     assert PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_pmis_parser_for_early_boundary(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2022-02-26"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_legacy_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2022-01-01"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert LEGACY_PMIS_PARSER_NAME in captured.out
 
 
 def test_parsers_match_selects_march_2022_parser(capsys) -> None:

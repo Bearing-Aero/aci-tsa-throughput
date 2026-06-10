@@ -2,6 +2,26 @@
   "schema_version": 1,
   "parsers": [
     {
+      "name": "historical_legacy_pmis_split_year_dates_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber",
+      "class": "HistoricalLegacyPmisSplitYearDatesPdfplumberParser",
+      "valid_from": "2018-07-07",
+      "valid_to": "2022-01-01",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_split_year_dates",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables and split year date cells."
+    },
+    {
+      "name": "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber",
+      "class": "HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser",
+      "valid_from": "2022-01-08",
+      "valid_to": "2022-02-26",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables."
+    },
+    {
       "name": "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber",
       "module": "tsa_throughput.parsing.plugins.historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber",
       "class": "HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser",

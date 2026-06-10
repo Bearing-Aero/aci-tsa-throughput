@@ -153,6 +153,7 @@ hourly_checkpoint_pmis_total_customer_throughput
 Supported date range:
 
 ```text
+2022-01-08 through 2022-02-26
 2022-04-02 through 2022-04-02
 ```
 
@@ -169,7 +170,47 @@ PMIS - Total Customer Throughput (Unadjusted)
 ```
 
 The PMIS historical parser handles a 9-column layout with a `Metrics` column and
-the PMIS total customer throughput count column.
+the PMIS total customer throughput count column. Local coverage verifies the
+same layout for week endings `2022-01-08` through `2022-02-26` and again at
+`2022-04-02`; the manifest uses separate entries because the intervening March
+2022 reports use the separate Total Pax + KCM PAX parser.
+
+## Legacy PMIS Split-Year Parser Identity
+
+Parser name:
+
+```text
+historical_legacy_pmis_split_year_dates_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalLegacyPmisSplitYearDatesPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_split_year_dates
+```
+
+Supported date range:
+
+```text
+2018-07-07 through 2022-01-01
+```
+
+The legacy PMIS split-year parser handles the same 9-column PMIS layout as the
+PMIS historical parser, but tolerates date cells where pdfplumber splits the
+final year digit, such as `12/26/202 1`. It only repairs that narrow pattern and
+otherwise fails conservatively.
 
 ## March 2022 Historical Parser Identity
 
@@ -253,6 +294,30 @@ PMIS historical parser representative fixture:
 tests/fixtures/tsa-throughput-week-ending-2022-04-02.pdf
 ```
 
+PMIS historical parser early-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-02-26.pdf
+```
+
+PMIS historical parser start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-01-08.pdf
+```
+
+Legacy PMIS split-year representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf
+```
+
+Legacy PMIS split-year start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf
+```
+
 March 2022 historical parser representative fixture:
 
 ```text
@@ -264,6 +329,14 @@ March 2022 historical parser start-boundary fixture:
 ```text
 tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf
 ```
+
+## Known Historical Boundary
+
+The next local uncovered boundary is week ending `2018-06-30`
+(`data/raw/tsa-throughput-week-ending-2018-06-30.pdf`). Its first page extracts
+a different PMIS-like layout where the first data row is merged into the header,
+and the header exposes `Date`/`Day` rather than the clean `Date`/`Hour of Day`
+columns. That layout should be handled as a separate parser family.
 
 Inspection summary fixture:
 
@@ -301,6 +374,13 @@ The PMIS historical parser fixture covers:
 
 ```text
 2022-03-27 through 2022-04-02
+```
+
+The legacy PMIS split-year parser fixtures cover:
+
+```text
+2021-12-26 through 2022-01-01
+2018-07-01 through 2018-07-07
 ```
 
 The inspected full sample has:
@@ -507,9 +587,9 @@ available.
 
 ## Current Limitations
 
-- These plugins only support the hourly checkpoint-level
-  `Total Pax + KCM PAX` layout.
-- It does not parse older TSA layouts with different metric columns.
+- These plugins only support the hourly checkpoint-level `Total Pax + KCM PAX`
+  layout and selected PMIS hourly checkpoint layouts.
+- They do not parse older TSA layouts with different table/header structures.
 - They do not attempt OCR.
 - They do not repair malformed PDFs.
 - They do not guess when the table header changes.
@@ -521,16 +601,18 @@ available.
 - The strict historical plugin supports week ending `2022-04-09` through
   `2022-12-31`, backed by local coverage scan and fixtures at both ends of the
   range.
-- The PMIS historical plugin supports week ending `2022-04-02`, backed by local
-  coverage scan and its representative fixture.
+- The PMIS historical plugin supports week endings `2022-01-08` through
+  `2022-02-26` and `2022-04-02`, backed by local coverage scan and fixtures.
+- The legacy PMIS split-year plugin supports week ending `2018-07-07` through
+  `2022-01-01`, backed by local coverage scan and fixtures at both ends of the
+  range.
 - The March 2022 historical plugin supports week ending `2022-03-05` through
   `2022-03-26`, backed by local coverage scan and fixtures at both ends of the
   range.
 - The next uncovered local boundary from `data/raw` is week ending
-  `2022-02-26`, currently a no-matching-parser failure. Inspection shows a
-  9-column PMIS `Total Customer Throughput (Unadjusted)` table, so the next
-  task should inspect whether that is a date-range extension for the PMIS
-  parser or a distinct earlier layout family.
+  `2018-06-30`, currently a no-matching-parser failure. Inspection shows a
+  PMIS-like table whose first data row is merged into the header, so the next
+  task should treat it as a distinct earlier layout family.
 
 ## Future Historical Parser Notes
 

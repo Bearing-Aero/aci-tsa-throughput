@@ -375,6 +375,7 @@ modern_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
 historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_legacy_pmis_split_year_dates_pdfplumber
 historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
@@ -385,6 +386,7 @@ ModernTotalPaxKcmHourlyCheckpointPdfplumberParser
 HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser
 HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
 HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
+HistoricalLegacyPmisSplitYearDatesPdfplumberParser
 HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
 ```
 
@@ -408,11 +410,17 @@ date/hour/airport context fields, parses counts as integers, and raises
 The modern parser manifest is valid from week ending `2025-12-27`. The
 historical parser manifest is valid from week ending `2023-01-07` through
 `2025-12-20`. The strict historical parser manifest is valid from week ending
-`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest is valid
-for week ending `2022-04-02`. The March 2022 historical parser manifest is
+`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest has
+conservative entries for week endings `2022-01-08` through `2022-02-26` and
+`2022-04-02`; local coverage verifies the same PMIS layout before and after the
+separate March 2022 Total Pax + KCM PAX layout. The legacy PMIS split-year
+parser manifest is valid from week ending `2018-07-07` through `2022-01-01` and
+repairs only the narrow date-cell extraction pattern where the final year digit
+is split from the rest of the date. The March 2022 historical parser manifest is
 valid from week ending `2022-03-05` through `2022-03-26`. The next local
-coverage boundary is week ending `2022-02-26`; inspection shows a 9-column PMIS
-table that should be reviewed before extending support further.
+coverage boundary is week ending `2018-06-30`; inspection shows a PMIS-like
+table whose first data row is merged into the header, so it should be reviewed
+as a separate layout family.
 
 ## CLI Commands
 

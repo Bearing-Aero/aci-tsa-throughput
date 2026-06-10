@@ -39,6 +39,9 @@ PMIS_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber"
 ).PARSER_NAME
+LEGACY_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber"
+).PARSER_NAME
 MARCH_2022_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
@@ -61,6 +64,16 @@ STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF = Path(
     "tests/fixtures/tsa-throughput-week-ending-2022-04-09.pdf"
 )
 PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-04-02.pdf")
+PMIS_EARLY_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-02-26.pdf"
+)
+PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2022-01-08.pdf"
+)
+LEGACY_PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf")
+LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf"
+)
 MARCH_2022_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf")
 MARCH_2022_BOUNDARY_FIXTURE_PDF = Path(
     "tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf"
@@ -412,6 +425,156 @@ def test_coverage_scan_extends_through_march_2022_historical_boundary(
         PMIS_PARSER_NAME,
         MARCH_2022_PARSER_NAME,
         MARCH_2022_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_early_historical_pmis_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-12-31.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-09.pdf",
+    )
+    shutil.copyfile(
+        PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-02.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-26.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-05.pdf",
+    )
+    shutil.copyfile(
+        PMIS_EARLY_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-02-26.pdf",
+    )
+    shutil.copyfile(
+        PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-01-08.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 11
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2022, 1, 8)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        PMIS_PARSER_NAME,
+    ]
+
+
+def test_coverage_scan_extends_through_legacy_pmis_boundary(
+    tmp_path: Path,
+) -> None:
+    input_dir = tmp_path / "raw"
+    input_dir.mkdir()
+    shutil.copyfile(
+        FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2026-06-06.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_MODERN_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2025-12-20.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2023-01-07.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-12-31.pdf",
+    )
+    shutil.copyfile(
+        STRICT_HISTORICAL_TOTAL_PAX_KCM_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-09.pdf",
+    )
+    shutil.copyfile(
+        PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-04-02.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-26.pdf",
+    )
+    shutil.copyfile(
+        MARCH_2022_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-03-05.pdf",
+    )
+    shutil.copyfile(
+        PMIS_EARLY_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-02-26.pdf",
+    )
+    shutil.copyfile(
+        PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-01-08.pdf",
+    )
+    shutil.copyfile(
+        LEGACY_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2022-01-01.pdf",
+    )
+    shutil.copyfile(
+        LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2018-07-07.pdf",
+    )
+
+    result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
+
+    assert result.success_count == 13
+    assert result.failure_count == 0
+    assert result.earliest_success_week_end == date(2018, 7, 7)
+    assert [item.parser_name for item in result.results] == [
+        MODERN_PARSER_NAME,
+        MODERN_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        STRICT_HISTORICAL_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+        MARCH_2022_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        PMIS_PARSER_NAME,
+        LEGACY_PMIS_PARSER_NAME,
+        LEGACY_PMIS_PARSER_NAME,
     ]
 
 

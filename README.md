@@ -598,6 +598,7 @@ modern_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
 historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_legacy_pmis_split_year_dates_pdfplumber
 historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
@@ -626,16 +627,21 @@ through `2025-12-20`, backed by representative fixtures at both ends of that
 range. The strict historical parser manifest is valid from week ending
 `2022-04-09` through `2022-12-31`; it uses stricter pdfplumber line extraction
 for the same `Total Pax + KCM PAX` columns. The PMIS historical parser manifest
-is valid for week ending `2022-04-02`; it uses the
-`PMIS - Total Customer Throughput (Unadjusted)` source column. The March 2022
-historical parser manifest is valid from week ending `2022-03-05` through
-`2022-03-26` for the earlier 8-column `Total Pax + KCM PAX` layout. The next
-local historical boundary found by coverage is week ending `2022-02-26`.
+has conservative entries for week endings `2022-01-08` through `2022-02-26` and
+`2022-04-02`; it uses the `PMIS - Total Customer Throughput (Unadjusted)` source
+column. The legacy PMIS split-year parser manifest is valid from week ending
+`2018-07-07` through `2022-01-01`; it handles the same PMIS source column when
+pdfplumber splits the final year digit in date cells. The March 2022 historical
+parser manifest is valid from week ending `2022-03-05` through `2022-03-26` for
+the earlier 8-column `Total Pax + KCM PAX` layout. The next local historical
+boundary found by coverage is week ending `2018-06-30`, where the PMIS-like
+table merges the first data row into the header and should be handled as a
+separate layout family.
 
 Current limitations:
 
-- Only the `Total Pax + KCM PAX` layout families and one PMIS hourly checkpoint
-  layout are implemented.
+- Only the `Total Pax + KCM PAX` layout families and selected PMIS hourly
+  checkpoint layouts are implemented.
 - Historical layouts must be added as separate parser plugins.
 - Parser manifest date ranges should be treated as conservative hints, not proof
   of universal coverage.

@@ -93,7 +93,7 @@ class HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser(
 
             if raw_date:
                 try:
-                    current_date = _parse_date(raw_date)
+                    current_date = self._parse_date(raw_date)
                 except ParseError as exc:
                     raise self._row_error(
                         source_file,
@@ -242,3 +242,6 @@ class HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser(
                         f"expected {expected_value!r}, found {header[index]!r}"
                     ),
                 )
+
+    def _parse_date(self, value: str) -> date:
+        return _parse_date(value)
