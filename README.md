@@ -599,6 +599,12 @@ historical_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
 historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
 historical_legacy_pmis_split_year_dates_pdfplumber
+historical_merged_header_pmis_pdfplumber
+historical_embedded_hour_merged_header_pmis_pdfplumber
+historical_hour_header_pmis_pdfplumber
+historical_early_hour_of_day_pmis_pdfplumber
+historical_early_hour_header_pmis_pdfplumber
+historical_2015_hour_of_day_pmis_pdfplumber
 historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
@@ -629,14 +635,20 @@ range. The strict historical parser manifest is valid from week ending
 for the same `Total Pax + KCM PAX` columns. The PMIS historical parser manifest
 has conservative entries for week endings `2022-01-08` through `2022-02-26` and
 `2022-04-02`; it uses the `PMIS - Total Customer Throughput (Unadjusted)` source
-column. The legacy PMIS split-year parser manifest is valid from week ending
-`2018-07-07` through `2022-01-01`; it handles the same PMIS source column when
-pdfplumber splits the final year digit in date cells. The March 2022 historical
-parser manifest is valid from week ending `2022-03-05` through `2022-03-26` for
-the earlier 8-column `Total Pax + KCM PAX` layout. The next local historical
-boundary found by coverage is week ending `2018-06-30`, where the PMIS-like
-table merges the first data row into the header and should be handled as a
-separate layout family.
+column. The legacy PMIS split-year parser manifest has conservative entries for
+week endings `2017-10-21` through `2018-06-23` and `2018-07-07` through
+`2022-01-01`; it handles the same PMIS source column when pdfplumber splits the
+final year digit in date cells. The merged-header PMIS parser manifest is valid
+for week ending `2018-06-30`. The embedded-hour merged-header PMIS parser
+manifest is valid for week ending `2017-10-14`. The hour-header PMIS parser
+manifest is valid from week ending `2017-02-11` through `2017-10-07`. The early
+Hour-of-Day PMIS parser manifest is valid for week ending `2017-02-04`. The
+early hour-header PMIS parser manifest is valid from week ending `2017-01-21`
+through `2017-01-28`. The 2015 Hour-of-Day PMIS parser manifest is valid from
+week ending `2015-01-10` through `2015-01-27`. The March 2022 historical parser
+manifest is valid from week ending `2022-03-05` through `2022-03-26` for the
+earlier 8-column `Total Pax + KCM PAX` layout. All locally available PDFs in
+`data/raw` are covered through week ending `2015-01-10`.
 
 Current limitations:
 

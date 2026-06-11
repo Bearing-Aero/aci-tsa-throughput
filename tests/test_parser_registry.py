@@ -42,7 +42,34 @@ PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
 )
 LEGACY_PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf")
 LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
-    "tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf"
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-21.pdf"
+)
+MERGED_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2018-06-30.pdf"
+)
+EMBEDDED_HOUR_MERGED_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-14.pdf"
+)
+HOUR_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-07.pdf"
+)
+HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-02-11.pdf"
+)
+EARLY_HOUR_OF_DAY_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-02-04.pdf"
+)
+EARLY_HOUR_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-01-28.pdf"
+)
+EARLY_HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-01-21.pdf"
+)
+HISTORICAL_2015_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2015-01-27.pdf"
+)
+HISTORICAL_2015_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2015-01-10.pdf"
 )
 MARCH_2022_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf")
 MARCH_2022_BOUNDARY_FIXTURE_PDF = Path(
@@ -69,6 +96,49 @@ legacy_pmis_parser = import_module(
 )
 LEGACY_PMIS_PARSER_NAME = legacy_pmis_parser.PARSER_NAME
 LegacyPmisParser = legacy_pmis_parser.HistoricalLegacyPmisSplitYearDatesPdfplumberParser
+merged_header_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins.historical_merged_header_pmis_pdfplumber"
+)
+MERGED_HEADER_PMIS_PARSER_NAME = merged_header_pmis_parser.PARSER_NAME
+MergedHeaderPmisParser = (
+    merged_header_pmis_parser.HistoricalMergedHeaderPmisPdfplumberParser
+)
+embedded_hour_merged_header_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_embedded_hour_merged_header_pmis_pdfplumber"
+)
+EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME = (
+    embedded_hour_merged_header_pmis_parser.PARSER_NAME
+)
+EmbeddedHourMergedHeaderPmisParser = (
+    embedded_hour_merged_header_pmis_parser.HistoricalEmbeddedHourMergedHeaderPmisPdfplumberParser
+)
+hour_header_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins.historical_hour_header_pmis_pdfplumber"
+)
+HOUR_HEADER_PMIS_PARSER_NAME = hour_header_pmis_parser.PARSER_NAME
+HourHeaderPmisParser = hour_header_pmis_parser.HistoricalHourHeaderPmisPdfplumberParser
+early_hour_of_day_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_of_day_pmis_pdfplumber"
+)
+EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME = early_hour_of_day_pmis_parser.PARSER_NAME
+EarlyHourOfDayPmisParser = (
+    early_hour_of_day_pmis_parser.HistoricalEarlyHourOfDayPmisPdfplumberParser
+)
+early_hour_header_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_header_pmis_pdfplumber"
+)
+EARLY_HOUR_HEADER_PMIS_PARSER_NAME = early_hour_header_pmis_parser.PARSER_NAME
+EarlyHourHeaderPmisParser = (
+    early_hour_header_pmis_parser.HistoricalEarlyHourHeaderPmisPdfplumberParser
+)
+historical_2015_pmis_parser = import_module(
+    "tsa_throughput.parsing.plugins.historical_2015_hour_of_day_pmis_pdfplumber"
+)
+HISTORICAL_2015_PMIS_PARSER_NAME = historical_2015_pmis_parser.PARSER_NAME
+Historical2015PmisParser = (
+    historical_2015_pmis_parser.Historical2015HourOfDayPmisPdfplumberParser
+)
 march_2022_parser = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
@@ -174,6 +244,12 @@ def test_parser_manifest_contains_registered_parser_entries() -> None:
     assert STRICT_HISTORICAL_PARSER_NAME in parser_names
     assert PMIS_PARSER_NAME in parser_names
     assert LEGACY_PMIS_PARSER_NAME in parser_names
+    assert MERGED_HEADER_PMIS_PARSER_NAME in parser_names
+    assert EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME in parser_names
+    assert HOUR_HEADER_PMIS_PARSER_NAME in parser_names
+    assert EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME in parser_names
+    assert EARLY_HOUR_HEADER_PMIS_PARSER_NAME in parser_names
+    assert HISTORICAL_2015_PMIS_PARSER_NAME in parser_names
     assert MARCH_2022_PARSER_NAME in parser_names
 
 
@@ -251,10 +327,12 @@ def test_list_parsers_returns_pmis_parser_metadata() -> None:
 
 def test_list_parsers_returns_legacy_pmis_parser_metadata() -> None:
     parsers = list_parsers()
-    legacy_pmis_parser = next(
+    legacy_pmis_parsers = [
         entry for entry in parsers if entry.name == LEGACY_PMIS_PARSER_NAME
-    )
+    ]
+    legacy_pmis_parser = legacy_pmis_parsers[0]
 
+    assert len(legacy_pmis_parsers) == 2
     assert isinstance(legacy_pmis_parser, ParserManifestEntry)
     assert legacy_pmis_parser.module.endswith(
         "historical_legacy_pmis_split_year_dates_pdfplumber"
@@ -262,11 +340,142 @@ def test_list_parsers_returns_legacy_pmis_parser_metadata() -> None:
     assert legacy_pmis_parser.class_name == (
         "HistoricalLegacyPmisSplitYearDatesPdfplumberParser"
     )
-    assert legacy_pmis_parser.valid_from == date(2018, 7, 7)
-    assert legacy_pmis_parser.valid_to == date(2022, 1, 1)
+    assert legacy_pmis_parser.valid_from == date(2017, 10, 21)
+    assert legacy_pmis_parser.valid_to == date(2018, 6, 23)
     assert legacy_pmis_parser.priority == 90
     assert legacy_pmis_parser.layout_family == (
         "hourly_checkpoint_pmis_total_customer_throughput_split_year_dates"
+    )
+    assert legacy_pmis_parsers[1].valid_from == date(2018, 7, 7)
+    assert legacy_pmis_parsers[1].valid_to == date(2022, 1, 1)
+
+
+def test_list_parsers_returns_merged_header_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    merged_header_pmis_parser = next(
+        entry for entry in parsers if entry.name == MERGED_HEADER_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(merged_header_pmis_parser, ParserManifestEntry)
+    assert merged_header_pmis_parser.module.endswith(
+        "historical_merged_header_pmis_pdfplumber"
+    )
+    assert merged_header_pmis_parser.class_name == (
+        "HistoricalMergedHeaderPmisPdfplumberParser"
+    )
+    assert merged_header_pmis_parser.valid_from == date(2018, 6, 30)
+    assert merged_header_pmis_parser.valid_to == date(2018, 6, 30)
+    assert merged_header_pmis_parser.priority == 90
+    assert merged_header_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_merged_header"
+    )
+
+
+def test_list_parsers_returns_embedded_hour_merged_header_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    embedded_hour_pmis_parser = next(
+        entry
+        for entry in parsers
+        if entry.name == EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(embedded_hour_pmis_parser, ParserManifestEntry)
+    assert embedded_hour_pmis_parser.module.endswith(
+        "historical_embedded_hour_merged_header_pmis_pdfplumber"
+    )
+    assert embedded_hour_pmis_parser.class_name == (
+        "HistoricalEmbeddedHourMergedHeaderPmisPdfplumberParser"
+    )
+    assert embedded_hour_pmis_parser.valid_from == date(2017, 10, 14)
+    assert embedded_hour_pmis_parser.valid_to == date(2017, 10, 14)
+    assert embedded_hour_pmis_parser.priority == 90
+    assert embedded_hour_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_"
+        "embedded_hour_merged_header"
+    )
+
+
+def test_list_parsers_returns_hour_header_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    hour_header_pmis_parser = next(
+        entry for entry in parsers if entry.name == HOUR_HEADER_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(hour_header_pmis_parser, ParserManifestEntry)
+    assert hour_header_pmis_parser.module.endswith(
+        "historical_hour_header_pmis_pdfplumber"
+    )
+    assert hour_header_pmis_parser.class_name == (
+        "HistoricalHourHeaderPmisPdfplumberParser"
+    )
+    assert hour_header_pmis_parser.valid_from == date(2017, 2, 11)
+    assert hour_header_pmis_parser.valid_to == date(2017, 10, 7)
+    assert hour_header_pmis_parser.priority == 90
+    assert hour_header_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_hour_header"
+    )
+
+
+def test_list_parsers_returns_early_hour_of_day_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    early_hour_of_day_pmis_parser = next(
+        entry for entry in parsers if entry.name == EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(early_hour_of_day_pmis_parser, ParserManifestEntry)
+    assert early_hour_of_day_pmis_parser.module.endswith(
+        "historical_early_hour_of_day_pmis_pdfplumber"
+    )
+    assert early_hour_of_day_pmis_parser.class_name == (
+        "HistoricalEarlyHourOfDayPmisPdfplumberParser"
+    )
+    assert early_hour_of_day_pmis_parser.valid_from == date(2017, 2, 4)
+    assert early_hour_of_day_pmis_parser.valid_to == date(2017, 2, 4)
+    assert early_hour_of_day_pmis_parser.priority == 90
+    assert early_hour_of_day_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_early_hour_of_day"
+    )
+
+
+def test_list_parsers_returns_early_hour_header_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    early_hour_header_pmis_parser = next(
+        entry for entry in parsers if entry.name == EARLY_HOUR_HEADER_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(early_hour_header_pmis_parser, ParserManifestEntry)
+    assert early_hour_header_pmis_parser.module.endswith(
+        "historical_early_hour_header_pmis_pdfplumber"
+    )
+    assert early_hour_header_pmis_parser.class_name == (
+        "HistoricalEarlyHourHeaderPmisPdfplumberParser"
+    )
+    assert early_hour_header_pmis_parser.valid_from == date(2017, 1, 21)
+    assert early_hour_header_pmis_parser.valid_to == date(2017, 1, 28)
+    assert early_hour_header_pmis_parser.priority == 90
+    assert early_hour_header_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_early_hour_header"
+    )
+
+
+def test_list_parsers_returns_2015_pmis_parser_metadata() -> None:
+    parsers = list_parsers()
+    historical_2015_pmis_parser = next(
+        entry for entry in parsers if entry.name == HISTORICAL_2015_PMIS_PARSER_NAME
+    )
+
+    assert isinstance(historical_2015_pmis_parser, ParserManifestEntry)
+    assert historical_2015_pmis_parser.module.endswith(
+        "historical_2015_hour_of_day_pmis_pdfplumber"
+    )
+    assert historical_2015_pmis_parser.class_name == (
+        "Historical2015HourOfDayPmisPdfplumberParser"
+    )
+    assert historical_2015_pmis_parser.valid_from == date(2015, 1, 10)
+    assert historical_2015_pmis_parser.valid_to == date(2015, 1, 27)
+    assert historical_2015_pmis_parser.priority == 90
+    assert historical_2015_pmis_parser.layout_family == (
+        "hourly_checkpoint_pmis_total_customer_throughput_2015_hour_of_day"
     )
 
 
@@ -415,12 +624,111 @@ def test_get_parser_selects_legacy_pmis_parser_for_matching_week_end() -> None:
 def test_get_parser_selects_legacy_pmis_parser_for_start_boundary() -> None:
     report = ThroughputReport(
         source_url="https://www.tsa.gov/example.pdf",
-        week_end=date(2018, 7, 7),
+        week_end=date(2017, 10, 21),
     )
 
     parser = get_parser(report, LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF)
 
     assert isinstance(parser, LegacyPmisParser)
+
+
+def test_get_parser_selects_merged_header_pmis_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2018, 6, 30),
+    )
+
+    parser = get_parser(report, MERGED_HEADER_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, MergedHeaderPmisParser)
+
+
+def test_get_parser_selects_embedded_hour_merged_header_pmis_parser() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 10, 14),
+    )
+
+    parser = get_parser(report, EMBEDDED_HOUR_MERGED_HEADER_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, EmbeddedHourMergedHeaderPmisParser)
+
+
+def test_get_parser_selects_hour_header_pmis_parser_for_matching_week_end() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 10, 7),
+    )
+
+    parser = get_parser(report, HOUR_HEADER_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, HourHeaderPmisParser)
+
+
+def test_get_parser_selects_hour_header_pmis_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 2, 11),
+    )
+
+    parser = get_parser(report, HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF)
+
+    assert isinstance(parser, HourHeaderPmisParser)
+
+
+def test_get_parser_selects_early_hour_of_day_pmis_parser() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 2, 4),
+    )
+
+    parser = get_parser(report, EARLY_HOUR_OF_DAY_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, EarlyHourOfDayPmisParser)
+
+
+def test_get_parser_selects_early_hour_header_pmis_parser() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 1, 28),
+    )
+
+    parser = get_parser(report, EARLY_HOUR_HEADER_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, EarlyHourHeaderPmisParser)
+
+
+def test_get_parser_selects_early_hour_header_pmis_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2017, 1, 21),
+    )
+
+    parser = get_parser(report, EARLY_HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF)
+
+    assert isinstance(parser, EarlyHourHeaderPmisParser)
+
+
+def test_get_parser_selects_2015_pmis_parser() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2015, 1, 27),
+    )
+
+    parser = get_parser(report, HISTORICAL_2015_PMIS_FIXTURE_PDF)
+
+    assert isinstance(parser, Historical2015PmisParser)
+
+
+def test_get_parser_selects_2015_pmis_parser_for_start_boundary() -> None:
+    report = ThroughputReport(
+        source_url="https://www.tsa.gov/example.pdf",
+        week_end=date(2015, 1, 10),
+    )
+
+    parser = get_parser(report, HISTORICAL_2015_PMIS_START_BOUNDARY_FIXTURE_PDF)
+
+    assert isinstance(parser, Historical2015PmisParser)
 
 
 def test_get_parser_selects_march_2022_parser_for_matching_week_end() -> None:
@@ -455,7 +763,7 @@ def test_get_parser_raises_for_unknown_parser_override() -> None:
 def test_get_parser_raises_when_no_parser_date_range_matches() -> None:
     report = ThroughputReport(
         source_url="https://www.tsa.gov/example.pdf",
-        week_end=date(2018, 6, 30),
+        week_end=date(2015, 1, 3),
     )
 
     with pytest.raises(ParserNotFoundError, match="no parser found"):

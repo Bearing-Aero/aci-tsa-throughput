@@ -16,7 +16,7 @@ LegacyPmisParser = legacy_pmis_parser.HistoricalLegacyPmisSplitYearDatesPdfplumb
 
 FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf")
 START_BOUNDARY_FIXTURE_PDF = Path(
-    "tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf"
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-21.pdf"
 )
 
 
@@ -65,14 +65,14 @@ def test_historical_legacy_pmis_parser_parses_start_boundary_fixture() -> None:
     first_record = result.records[0]
 
     assert result.record_count > 0
-    assert first_record.throughput_date == date(2018, 7, 1)
+    assert first_record.throughput_date == date(2017, 10, 15)
     assert first_record.hour == time(0, 0)
-    assert first_record.airport_code == "ABQ"
-    assert first_record.airport_name == "Albuquerque International Sunport"
-    assert first_record.city == "Albuquerque"
-    assert first_record.state == "NM"
-    assert first_record.checkpoint_name == "Checkpoint for A/B Gates"
-    assert first_record.throughput_count == 1
+    assert first_record.airport_code == "ANC"
+    assert first_record.airport_name == "Ted Stevens Anchorage International"
+    assert first_record.city == "Anchorage"
+    assert first_record.state == "AK"
+    assert first_record.checkpoint_name == "South Checkpoint"
+    assert first_record.throughput_count == 119
     assert first_record.metric_name == METRIC_NAME
     assert first_record.metric_source_column == METRIC_SOURCE_COLUMN
     assert first_record.parser_name == PARSER_NAME

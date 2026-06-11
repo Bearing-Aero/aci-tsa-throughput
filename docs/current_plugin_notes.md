@@ -204,6 +204,7 @@ hourly_checkpoint_pmis_total_customer_throughput_split_year_dates
 Supported date range:
 
 ```text
+2017-10-21 through 2018-06-23
 2018-07-07 through 2022-01-01
 ```
 
@@ -211,6 +212,228 @@ The legacy PMIS split-year parser handles the same 9-column PMIS layout as the
 PMIS historical parser, but tolerates date cells where pdfplumber splits the
 final year digit, such as `12/26/202 1`. It only repairs that narrow pattern and
 otherwise fails conservatively.
+
+## Merged-Header PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_merged_header_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalMergedHeaderPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_merged_header_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_merged_header
+```
+
+Supported date range:
+
+```text
+2018-06-30 through 2018-06-30
+```
+
+The merged-header PMIS parser handles a one-week extraction anomaly where the
+first data row is merged into the table header, with `Date`/`Day` replacing the
+clean `Date`/`Hour of Day` header. It carries date, hour, and airport context
+across page breaks because the extracted table can begin mid-hour or mid-airport.
+
+## Embedded-Hour Merged-Header PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_embedded_hour_merged_header_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalEmbeddedHourMergedHeaderPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_embedded_hour_merged_header_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_embedded_hour_merged_header
+```
+
+Supported date range:
+
+```text
+2017-10-14 through 2017-10-14
+```
+
+The embedded-hour merged-header PMIS parser handles a one-week extraction
+anomaly where the first data row is merged into the table header and the
+`Day` header cell also contains the first hour value. It is registered
+separately from the 2018 merged-header parser because the airport code is
+embedded inside the airport-name header value instead of leading that value.
+
+## Hour-Header PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_hour_header_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalHourHeaderPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_hour_header_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_hour_header
+```
+
+Supported date range:
+
+```text
+2017-02-11 through 2017-10-07
+```
+
+The hour-header PMIS parser handles the same 9-column PMIS table as the later
+PMIS parser, but accepts the shortened `Hour` column header instead of
+`Hour of Day`. It is registered separately to keep the older header contract
+explicit and conservative.
+
+## Early Hour-of-Day PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_early_hour_of_day_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalEarlyHourOfDayPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_early_hour_of_day_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_early_hour_of_day
+```
+
+Supported date range:
+
+```text
+2017-02-04 through 2017-02-04
+```
+
+The early Hour-of-Day PMIS parser handles the same PMIS source column as the
+later PMIS parser, but is registered separately because this local boundary
+report spans `2017-01-15` through `2017-02-04` and interrupts the neighboring
+shortened-`Hour` layout range.
+
+## Early Hour-Header PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_early_hour_header_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+HistoricalEarlyHourHeaderPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_early_hour_header_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_early_hour_header
+```
+
+Supported date range:
+
+```text
+2017-01-21 through 2017-01-28
+```
+
+The early hour-header PMIS parser handles the same shortened `Hour` PMIS header
+as the later hour-header parser, but is registered separately because the local
+corpus has an intervening `2017-02-04` Hour-of-Day PMIS report.
+
+## 2015 Hour-of-Day PMIS Parser Identity
+
+Parser name:
+
+```text
+historical_2015_hour_of_day_pmis_pdfplumber
+```
+
+Class name:
+
+```text
+Historical2015HourOfDayPmisPdfplumberParser
+```
+
+Module:
+
+```text
+tsa_throughput.parsing.plugins.historical_2015_hour_of_day_pmis_pdfplumber
+```
+
+Layout family:
+
+```text
+hourly_checkpoint_pmis_total_customer_throughput_2015_hour_of_day
+```
+
+Supported date range:
+
+```text
+2015-01-10 through 2015-01-27
+```
+
+The 2015 Hour-of-Day PMIS parser handles the two locally available 2015 PMIS
+reports. It uses the same PMIS source column as later PMIS parsers and keeps a
+separate identity because the local corpus jumps from January 2015 to January
+2017.
 
 ## March 2022 Historical Parser Identity
 
@@ -315,7 +538,61 @@ tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf
 Legacy PMIS split-year start-boundary fixture:
 
 ```text
-tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf
+tests/fixtures/tsa-throughput-week-ending-2017-10-21.pdf
+```
+
+Merged-header PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2018-06-30.pdf
+```
+
+Embedded-hour merged-header PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-10-14.pdf
+```
+
+Hour-header PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-10-07.pdf
+```
+
+Hour-header PMIS start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-02-11.pdf
+```
+
+Early Hour-of-Day PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-02-04.pdf
+```
+
+Early hour-header PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-01-28.pdf
+```
+
+Early hour-header PMIS start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2017-01-21.pdf
+```
+
+2015 Hour-of-Day PMIS representative fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2015-01-27.pdf
+```
+
+2015 Hour-of-Day PMIS start-boundary fixture:
+
+```text
+tests/fixtures/tsa-throughput-week-ending-2015-01-10.pdf
 ```
 
 March 2022 historical parser representative fixture:
@@ -332,11 +609,9 @@ tests/fixtures/tsa-throughput-week-ending-2022-03-05.pdf
 
 ## Known Historical Boundary
 
-The next local uncovered boundary is week ending `2018-06-30`
-(`data/raw/tsa-throughput-week-ending-2018-06-30.pdf`). Its first page extracts
-a different PMIS-like layout where the first data row is merged into the header,
-and the header exposes `Date`/`Day` rather than the clean `Date`/`Hour of Day`
-columns. That layout should be handled as a separate parser family.
+All locally available PDFs in `data/raw` parse successfully through week ending
+`2015-01-10`. No next local uncovered boundary was found by the latest parser
+coverage scan.
 
 Inspection summary fixture:
 
@@ -380,7 +655,46 @@ The legacy PMIS split-year parser fixtures cover:
 
 ```text
 2021-12-26 through 2022-01-01
-2018-07-01 through 2018-07-07
+2017-10-15 through 2017-10-21
+```
+
+The merged-header PMIS parser fixture covers:
+
+```text
+2018-06-24 through 2018-06-30
+```
+
+The embedded-hour merged-header PMIS parser fixture covers:
+
+```text
+2017-10-08 through 2017-10-14
+```
+
+The hour-header PMIS parser fixtures cover:
+
+```text
+2017-10-01 through 2017-10-07
+2017-02-05 through 2017-02-11
+```
+
+The early Hour-of-Day PMIS parser fixture covers:
+
+```text
+2017-01-15 through 2017-02-04
+```
+
+The early hour-header PMIS parser fixtures cover:
+
+```text
+2017-01-22 through 2017-01-28
+2017-01-15 through 2017-01-21
+```
+
+The 2015 Hour-of-Day PMIS parser fixtures cover:
+
+```text
+2015-01-21 through 2015-01-27
+2015-01-04 through 2015-01-10
 ```
 
 The inspected full sample has:
@@ -603,16 +917,28 @@ available.
   range.
 - The PMIS historical plugin supports week endings `2022-01-08` through
   `2022-02-26` and `2022-04-02`, backed by local coverage scan and fixtures.
-- The legacy PMIS split-year plugin supports week ending `2018-07-07` through
-  `2022-01-01`, backed by local coverage scan and fixtures at both ends of the
+- The legacy PMIS split-year plugin supports week endings `2017-10-21` through
+  `2018-06-23` and `2018-07-07` through `2022-01-01`, backed by local coverage
+  scan and fixtures.
+- The merged-header PMIS plugin supports week ending `2018-06-30`, backed by
+  local coverage scan and its representative fixture.
+- The embedded-hour merged-header PMIS plugin supports week ending
+  `2017-10-14`, backed by local coverage scan and its representative fixture.
+- The hour-header PMIS plugin supports week endings `2017-02-11` through
+  `2017-10-07`, backed by local coverage scan and fixtures at both ends of the
+  range.
+- The early Hour-of-Day PMIS plugin supports week ending `2017-02-04`, backed
+  by local coverage scan and its representative fixture.
+- The early hour-header PMIS plugin supports week endings `2017-01-21` through
+  `2017-01-28`, backed by local coverage scan and fixtures at both ends of the
+  range.
+- The 2015 Hour-of-Day PMIS plugin supports week endings `2015-01-10` through
+  `2015-01-27`, backed by local coverage scan and fixtures at both ends of the
   range.
 - The March 2022 historical plugin supports week ending `2022-03-05` through
   `2022-03-26`, backed by local coverage scan and fixtures at both ends of the
   range.
-- The next uncovered local boundary from `data/raw` is week ending
-  `2018-06-30`, currently a no-matching-parser failure. Inspection shows a
-  PMIS-like table whose first data row is merged into the header, so the next
-  task should treat it as a distinct earlier layout family.
+- No next uncovered local boundary was found in `data/raw`.
 
 ## Future Historical Parser Notes
 

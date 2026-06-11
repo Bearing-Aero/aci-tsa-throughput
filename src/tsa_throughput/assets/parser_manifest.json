@@ -5,6 +5,76 @@
       "name": "historical_legacy_pmis_split_year_dates_pdfplumber",
       "module": "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber",
       "class": "HistoricalLegacyPmisSplitYearDatesPdfplumberParser",
+      "valid_from": "2017-10-21",
+      "valid_to": "2018-06-23",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_split_year_dates",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables and split year date cells."
+    },
+    {
+      "name": "historical_embedded_hour_merged_header_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_embedded_hour_merged_header_pmis_pdfplumber",
+      "class": "HistoricalEmbeddedHourMergedHeaderPmisPdfplumberParser",
+      "valid_from": "2017-10-14",
+      "valid_to": "2017-10-14",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_embedded_hour_merged_header",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables where the first data row and hour are merged into the header."
+    },
+    {
+      "name": "historical_hour_header_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_hour_header_pmis_pdfplumber",
+      "class": "HistoricalHourHeaderPmisPdfplumberParser",
+      "valid_from": "2017-02-11",
+      "valid_to": "2017-10-07",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_hour_header",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables whose hour column header is shortened to Hour."
+    },
+    {
+      "name": "historical_early_hour_of_day_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_early_hour_of_day_pmis_pdfplumber",
+      "class": "HistoricalEarlyHourOfDayPmisPdfplumberParser",
+      "valid_from": "2017-02-04",
+      "valid_to": "2017-02-04",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_early_hour_of_day",
+      "description": "Parser for early historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables that retain the Hour of Day header."
+    },
+    {
+      "name": "historical_early_hour_header_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_early_hour_header_pmis_pdfplumber",
+      "class": "HistoricalEarlyHourHeaderPmisPdfplumberParser",
+      "valid_from": "2017-01-21",
+      "valid_to": "2017-01-28",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_early_hour_header",
+      "description": "Parser for early historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables whose hour column header is shortened to Hour."
+    },
+    {
+      "name": "historical_2015_hour_of_day_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_2015_hour_of_day_pmis_pdfplumber",
+      "class": "Historical2015HourOfDayPmisPdfplumberParser",
+      "valid_from": "2015-01-10",
+      "valid_to": "2015-01-27",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_2015_hour_of_day",
+      "description": "Parser for 2015 historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables that retain the Hour of Day header."
+    },
+    {
+      "name": "historical_merged_header_pmis_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_merged_header_pmis_pdfplumber",
+      "class": "HistoricalMergedHeaderPmisPdfplumberParser",
+      "valid_from": "2018-06-30",
+      "valid_to": "2018-06-30",
+      "priority": 90,
+      "layout_family": "hourly_checkpoint_pmis_total_customer_throughput_merged_header",
+      "description": "Parser for historical TSA throughput reports with PMIS Total Customer Throughput (Unadjusted) tables where the first data row is merged into the header."
+    },
+    {
+      "name": "historical_legacy_pmis_split_year_dates_pdfplumber",
+      "module": "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber",
+      "class": "HistoricalLegacyPmisSplitYearDatesPdfplumberParser",
       "valid_from": "2018-07-07",
       "valid_to": "2022-01-01",
       "priority": 90,

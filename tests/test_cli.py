@@ -46,6 +46,25 @@ PMIS_PARSER_NAME = import_module(
 LEGACY_PMIS_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber"
 ).PARSER_NAME
+MERGED_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_merged_header_pmis_pdfplumber"
+).PARSER_NAME
+EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_embedded_hour_merged_header_pmis_pdfplumber"
+).PARSER_NAME
+HOUR_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_hour_header_pmis_pdfplumber"
+).PARSER_NAME
+EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_of_day_pmis_pdfplumber"
+).PARSER_NAME
+EARLY_HOUR_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_header_pmis_pdfplumber"
+).PARSER_NAME
+HISTORICAL_2015_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_2015_hour_of_day_pmis_pdfplumber"
+).PARSER_NAME
 MARCH_2022_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
@@ -562,6 +581,12 @@ def test_parsers_list_output_includes_modern_parser_metadata(capsys) -> None:
     assert STRICT_HISTORICAL_PARSER_NAME in captured.out
     assert PMIS_PARSER_NAME in captured.out
     assert LEGACY_PMIS_PARSER_NAME in captured.out
+    assert MERGED_HEADER_PMIS_PARSER_NAME in captured.out
+    assert EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME in captured.out
+    assert HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+    assert EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME in captured.out
+    assert EARLY_HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+    assert HISTORICAL_2015_PMIS_PARSER_NAME in captured.out
     assert MARCH_2022_PARSER_NAME in captured.out
     assert "hourly_checkpoint_total_pax_kcm" in captured.out
 
@@ -575,7 +600,7 @@ def test_parsers_match_command_exits_successfully(capsys) -> None:
 
 
 def test_parsers_match_outside_coverage_exits_nonzero(capsys) -> None:
-    exit_code = main(["parsers", "match", "--week-ending", "2018-06-30"])
+    exit_code = main(["parsers", "match", "--week-ending", "2015-01-03"])
 
     assert exit_code != 0
     captured = capsys.readouterr()
@@ -620,6 +645,82 @@ def test_parsers_match_selects_legacy_pmis_parser(capsys) -> None:
     assert exit_code == 0
     captured = capsys.readouterr()
     assert LEGACY_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_merged_header_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2018-06-30"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert MERGED_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_embedded_hour_merged_header_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-10-14"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_hour_header_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-10-07"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_hour_header_pmis_parser_for_start_boundary(
+    capsys,
+) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-02-11"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_early_hour_of_day_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-02-04"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_early_hour_header_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-01-28"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert EARLY_HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_early_hour_header_pmis_parser_for_start_boundary(
+    capsys,
+) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2017-01-21"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert EARLY_HOUR_HEADER_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_2015_pmis_parser(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2015-01-27"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert HISTORICAL_2015_PMIS_PARSER_NAME in captured.out
+
+
+def test_parsers_match_selects_2015_pmis_parser_for_start_boundary(capsys) -> None:
+    exit_code = main(["parsers", "match", "--week-ending", "2015-01-10"])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert HISTORICAL_2015_PMIS_PARSER_NAME in captured.out
 
 
 def test_parsers_match_selects_march_2022_parser(capsys) -> None:

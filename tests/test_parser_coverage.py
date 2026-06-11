@@ -42,6 +42,25 @@ PMIS_PARSER_NAME = import_module(
 LEGACY_PMIS_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins.historical_legacy_pmis_split_year_dates_pdfplumber"
 ).PARSER_NAME
+MERGED_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_merged_header_pmis_pdfplumber"
+).PARSER_NAME
+EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins."
+    "historical_embedded_hour_merged_header_pmis_pdfplumber"
+).PARSER_NAME
+HOUR_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_hour_header_pmis_pdfplumber"
+).PARSER_NAME
+EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_of_day_pmis_pdfplumber"
+).PARSER_NAME
+EARLY_HOUR_HEADER_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_early_hour_header_pmis_pdfplumber"
+).PARSER_NAME
+HISTORICAL_2015_PMIS_PARSER_NAME = import_module(
+    "tsa_throughput.parsing.plugins.historical_2015_hour_of_day_pmis_pdfplumber"
+).PARSER_NAME
 MARCH_2022_PARSER_NAME = import_module(
     "tsa_throughput.parsing.plugins."
     "historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber"
@@ -72,7 +91,34 @@ PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
 )
 LEGACY_PMIS_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-01-01.pdf")
 LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
-    "tests/fixtures/tsa-throughput-week-ending-2018-07-07.pdf"
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-21.pdf"
+)
+MERGED_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2018-06-30.pdf"
+)
+EMBEDDED_HOUR_MERGED_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-14.pdf"
+)
+HOUR_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-10-07.pdf"
+)
+HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-02-11.pdf"
+)
+EARLY_HOUR_OF_DAY_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-02-04.pdf"
+)
+EARLY_HOUR_HEADER_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-01-28.pdf"
+)
+EARLY_HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2017-01-21.pdf"
+)
+HISTORICAL_2015_PMIS_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2015-01-27.pdf"
+)
+HISTORICAL_2015_PMIS_START_BOUNDARY_FIXTURE_PDF = Path(
+    "tests/fixtures/tsa-throughput-week-ending-2015-01-10.pdf"
 )
 MARCH_2022_FIXTURE_PDF = Path("tests/fixtures/tsa-throughput-week-ending-2022-03-26.pdf")
 MARCH_2022_BOUNDARY_FIXTURE_PDF = Path(
@@ -552,15 +598,51 @@ def test_coverage_scan_extends_through_legacy_pmis_boundary(
         input_dir / "tsa-throughput-week-ending-2022-01-01.pdf",
     )
     shutil.copyfile(
+        MERGED_HEADER_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2018-06-30.pdf",
+    )
+    shutil.copyfile(
         LEGACY_PMIS_START_BOUNDARY_FIXTURE_PDF,
-        input_dir / "tsa-throughput-week-ending-2018-07-07.pdf",
+        input_dir / "tsa-throughput-week-ending-2017-10-21.pdf",
+    )
+    shutil.copyfile(
+        EMBEDDED_HOUR_MERGED_HEADER_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-10-14.pdf",
+    )
+    shutil.copyfile(
+        HOUR_HEADER_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-10-07.pdf",
+    )
+    shutil.copyfile(
+        HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-02-11.pdf",
+    )
+    shutil.copyfile(
+        EARLY_HOUR_OF_DAY_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-02-04.pdf",
+    )
+    shutil.copyfile(
+        EARLY_HOUR_HEADER_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-01-28.pdf",
+    )
+    shutil.copyfile(
+        EARLY_HOUR_HEADER_PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2017-01-21.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_2015_PMIS_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2015-01-27.pdf",
+    )
+    shutil.copyfile(
+        HISTORICAL_2015_PMIS_START_BOUNDARY_FIXTURE_PDF,
+        input_dir / "tsa-throughput-week-ending-2015-01-10.pdf",
     )
 
     result = scan_parser_coverage(input_dir, max_pages=3, stop_on_first_error=True)
 
-    assert result.success_count == 13
+    assert result.success_count == 22
     assert result.failure_count == 0
-    assert result.earliest_success_week_end == date(2018, 7, 7)
+    assert result.earliest_success_week_end == date(2015, 1, 10)
     assert [item.parser_name for item in result.results] == [
         MODERN_PARSER_NAME,
         MODERN_PARSER_NAME,
@@ -574,7 +656,16 @@ def test_coverage_scan_extends_through_legacy_pmis_boundary(
         PMIS_PARSER_NAME,
         PMIS_PARSER_NAME,
         LEGACY_PMIS_PARSER_NAME,
+        MERGED_HEADER_PMIS_PARSER_NAME,
         LEGACY_PMIS_PARSER_NAME,
+        EMBEDDED_HOUR_MERGED_HEADER_PMIS_PARSER_NAME,
+        HOUR_HEADER_PMIS_PARSER_NAME,
+        HOUR_HEADER_PMIS_PARSER_NAME,
+        EARLY_HOUR_OF_DAY_PMIS_PARSER_NAME,
+        EARLY_HOUR_HEADER_PMIS_PARSER_NAME,
+        EARLY_HOUR_HEADER_PMIS_PARSER_NAME,
+        HISTORICAL_2015_PMIS_PARSER_NAME,
+        HISTORICAL_2015_PMIS_PARSER_NAME,
     ]
 
 
