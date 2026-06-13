@@ -28,22 +28,24 @@ joel@bearing.aero
 
 ## Development Environment
 
-Use the existing Conda environment:
+Use a Python environment manager such as Conda, Miniconda, `venv`, `uv`, or
+another tool of your choice. The project supports Python 3.10 or newer.
+
+Example using Conda:
 
 ```bash
-conda activate bearing-tsa
+conda create -n tsa-throughput python=3.10
+conda activate tsa-throughput
 pip install -e ".[dev]"
 ```
 
-If it must be recreated:
+Example using `venv`:
 
 ```bash
-conda create -n bearing-tsa python=3.10
-conda activate bearing-tsa
+python -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev]"
 ```
-
-Python support is `>=3.10`.
 
 Common commands:
 
