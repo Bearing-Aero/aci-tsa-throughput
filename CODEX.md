@@ -95,8 +95,20 @@ src/tsa_throughput/
   parsing/
     base.py
     batch.py
+    coverage.py
     registry.py
     plugins/
+      historical_2015_hour_of_day_pmis_pdfplumber.py
+      historical_early_hour_header_pmis_pdfplumber.py
+      historical_early_hour_of_day_pmis_pdfplumber.py
+      historical_embedded_hour_merged_header_pmis_pdfplumber.py
+      historical_hour_header_pmis_pdfplumber.py
+      historical_legacy_pmis_split_year_dates_pdfplumber.py
+      historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber.py
+      historical_merged_header_pmis_pdfplumber.py
+      historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber.py
+      historical_total_pax_kcm_hourly_checkpoint_pdfplumber.py
+      historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber.py
       modern_total_pax_kcm_hourly_checkpoint_pdfplumber.py
 ```
 
@@ -167,26 +179,42 @@ modern_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_pdfplumber
 historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber
 historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber
+historical_legacy_pmis_split_year_dates_pdfplumber
+historical_merged_header_pmis_pdfplumber
+historical_embedded_hour_merged_header_pmis_pdfplumber
+historical_hour_header_pmis_pdfplumber
+historical_early_hour_of_day_pmis_pdfplumber
+historical_early_hour_header_pmis_pdfplumber
+historical_2015_hour_of_day_pmis_pdfplumber
 historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber
 ```
 
-Classes:
+The 12 parser implementations are registered through 14 manifest entries because
+the legacy split-year PMIS parser and the standard historical PMIS parser each
+cover two non-contiguous date windows. Current manifest coverage is:
 
-```text
-ModernTotalPaxKcmHourlyCheckpointPdfplumberParser
-HistoricalTotalPaxKcmHourlyCheckpointPdfplumberParser
-HistoricalTotalPaxKcmHourlyCheckpointStrictPdfplumberParser
-HistoricalPmisTotalCustomerThroughputHourlyCheckpointPdfplumberParser
-HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
-```
+| Parser | Valid week-ending dates |
+| --- | --- |
+| `historical_2015_hour_of_day_pmis_pdfplumber` | `2015-01-10` through `2015-01-27` |
+| `historical_early_hour_header_pmis_pdfplumber` | `2017-01-21` through `2017-01-28` |
+| `historical_early_hour_of_day_pmis_pdfplumber` | `2017-02-04` |
+| `historical_hour_header_pmis_pdfplumber` | `2017-02-11` through `2017-10-07` |
+| `historical_embedded_hour_merged_header_pmis_pdfplumber` | `2017-10-14` |
+| `historical_legacy_pmis_split_year_dates_pdfplumber` | `2017-10-21` through `2018-06-23`; `2018-07-07` through `2022-01-01` |
+| `historical_merged_header_pmis_pdfplumber` | `2018-06-30` |
+| `historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber` | `2022-01-08` through `2022-02-26`; `2022-04-02` |
+| `historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2022-03-05` through `2022-03-26` |
+| `historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber` | `2022-04-09` through `2022-12-31` |
+| `historical_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2023-01-07` through `2025-12-20` |
+| `modern_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2025-12-27` onward |
 
-Layout family:
+The plugins support two source metrics:
 
-```text
-hourly_checkpoint_total_pax_kcm
-```
+- `Total Pax + KCM PAX`, normalized as `total_pax_plus_kcm_pax`.
+- `PMIS - Total Customer Throughput (Unadjusted)`, normalized as
+  `pmis_total_customer_throughput_unadjusted`.
 
-It supports the modern hourly checkpoint table with:
+The modern Total Pax + KCM PAX table has:
 
 ```text
 Date
@@ -199,18 +227,13 @@ Checkpoint
 Total Pax + KCM PAX
 ```
 
-It uses `pdfplumber` line-based table extraction, maps the blank fourth header
-column to `airport_name`, forward-fills date/hour/airport context fields, and
-does not forward-fill `checkpoint_name` or `throughput_count`.
-
-The modern parser manifest is currently valid from week ending `2025-12-27`.
-The historical parser manifest is valid from week ending `2023-01-07` through
-`2025-12-20`. The strict historical parser manifest is valid from week ending
-`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest is valid
-for week ending `2022-04-02`. The March 2022 historical parser manifest is
-valid from week ending `2022-03-05` through `2022-03-26`. Those boundaries are
-backed by local fixtures and coverage scans; the next local boundary is week
-ending `2022-02-26`.
+PMIS tables add a `Metrics` column and use the PMIS count column. Historical
+plugins isolate extraction differences such as strict line settings, shortened
+`Hour` headers, split year digits, and data embedded in table headers. Parsers
+forward-fill date/hour/airport context where the layout requires it, but do not
+guess missing checkpoint names or throughput counts. Manifest boundaries are
+fixture-backed and conservative; a matching date window is still validated by
+the parser's `can_parse()` method.
 
 ## Manifests
 
@@ -313,7 +336,8 @@ Download:
 Parsing:
 
 1. `get_parser()` selects a parser from the parser manifest.
-2. The modern plugin parses matching tables into `ThroughputRecord` objects.
+2. The selected plugin parses matching tables into `ThroughputRecord` objects
+   while preserving source page, table, parser identity, and parse confidence.
 3. CLI output uses the canonical CSV columns from `cli.CANONICAL_COLUMNS`.
 4. `parse-all` processes matching PDFs in deterministic filename order and can
    continue after parser failures when requested.
@@ -330,7 +354,8 @@ Parsing:
 Implemented:
 
 - Package skeleton, models, and exceptions.
-- Modern TSA PDF parser plugin and tests.
+- Twelve TSA PDF parser plugins covering the known modern and historical layout
+  families in the installed source catalog, with fixture-backed tests.
 - Parser manifest and registry.
 - CLI parse command.
 - CLI parser inspection commands.
@@ -347,14 +372,14 @@ Implemented:
 
 ## Remaining Roadmap
 
-- Use `tsa-throughput download --from-installed-manifest --output-dir data/raw`
-  before parser coverage so `data/raw` contains real TSA PDFs and a runtime
-  manifest. If needed, refresh `data/source_manifest.json` and download with
-  `--from-source-manifest`.
-- Use `tsa-throughput parsers coverage --input-dir data/raw --stop-on-first-error`
-  to identify the next historical layout boundary, then add a focused parser
-  plugin and fixture for that first failure PDF.
-- Broaden parser manifests with conservative valid date ranges backed by tests.
+- Keep the local PDF corpus synchronized with the installed or a freshly
+  generated source manifest before running coverage scans.
+- Re-run `tsa-throughput parsers coverage --input-dir data/raw` whenever the
+  catalog grows or TSA introduces a new layout. Add a focused plugin and fixture
+  for the first confirmed failure rather than broadening an existing parser
+  speculatively.
+- Keep parser date windows conservative and backed by fixtures and coverage
+  results.
 - Add richer integration tests behind explicit live-network opt-in.
 - Add downstream export/load helpers only after core parsing coverage is stable.
 

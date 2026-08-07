@@ -52,9 +52,21 @@ src/tsa_throughput/
     __init__.py
     base.py
     batch.py
+    coverage.py
     registry.py
     plugins/
       __init__.py
+      historical_2015_hour_of_day_pmis_pdfplumber.py
+      historical_early_hour_header_pmis_pdfplumber.py
+      historical_early_hour_of_day_pmis_pdfplumber.py
+      historical_embedded_hour_merged_header_pmis_pdfplumber.py
+      historical_hour_header_pmis_pdfplumber.py
+      historical_legacy_pmis_split_year_dates_pdfplumber.py
+      historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber.py
+      historical_merged_header_pmis_pdfplumber.py
+      historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber.py
+      historical_total_pax_kcm_hourly_checkpoint_pdfplumber.py
+      historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber.py
       modern_total_pax_kcm_hourly_checkpoint_pdfplumber.py
 ```
 
@@ -402,7 +414,25 @@ Historical2015HourOfDayPmisPdfplumberParser
 HistoricalMarch2022TotalPaxKcmHourlyCheckpointPdfplumberParser
 ```
 
-Supported layout:
+The 12 implementations occupy 14 parser-manifest entries because two parsers
+cover non-contiguous date windows. The registered windows are:
+
+| Parser | Valid week-ending dates |
+| --- | --- |
+| `historical_2015_hour_of_day_pmis_pdfplumber` | `2015-01-10` through `2015-01-27` |
+| `historical_early_hour_header_pmis_pdfplumber` | `2017-01-21` through `2017-01-28` |
+| `historical_early_hour_of_day_pmis_pdfplumber` | `2017-02-04` |
+| `historical_hour_header_pmis_pdfplumber` | `2017-02-11` through `2017-10-07` |
+| `historical_embedded_hour_merged_header_pmis_pdfplumber` | `2017-10-14` |
+| `historical_legacy_pmis_split_year_dates_pdfplumber` | `2017-10-21` through `2018-06-23`; `2018-07-07` through `2022-01-01` |
+| `historical_merged_header_pmis_pdfplumber` | `2018-06-30` |
+| `historical_pmis_total_customer_throughput_hourly_checkpoint_pdfplumber` | `2022-01-08` through `2022-02-26`; `2022-04-02` |
+| `historical_march_2022_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2022-03-05` through `2022-03-26` |
+| `historical_total_pax_kcm_hourly_checkpoint_strict_pdfplumber` | `2022-04-09` through `2022-12-31` |
+| `historical_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2023-01-07` through `2025-12-20` |
+| `modern_total_pax_kcm_hourly_checkpoint_pdfplumber` | `2025-12-27` onward |
+
+### Total Pax + KCM PAX layout
 
 ```text
 Date
@@ -415,36 +445,29 @@ Checkpoint
 Total Pax + KCM PAX
 ```
 
-The plugin uses `pdfplumber`, validates the modern header, forward-fills
-date/hour/airport context fields, parses counts as integers, and raises
-`ParseError` rather than guessing through unfamiliar tables.
+These plugins normalize the count as `total_pax_plus_kcm_pax`. The strict-line
+and March 2022 implementations isolate extraction-setting differences instead
+of weakening the modern parser's header checks.
 
-The modern parser manifest is valid from week ending `2025-12-27`. The
-historical parser manifest is valid from week ending `2023-01-07` through
-`2025-12-20`. The strict historical parser manifest is valid from week ending
-`2022-04-09` through `2022-12-31`. The PMIS historical parser manifest has
-conservative entries for week endings `2022-01-08` through `2022-02-26` and
-`2022-04-02`; local coverage verifies the same PMIS layout before and after the
-separate March 2022 Total Pax + KCM PAX layout. The legacy PMIS split-year
-parser manifest has conservative entries for week endings `2017-10-21` through
-`2018-06-23` and `2018-07-07` through `2022-01-01`; it repairs only the narrow
-date-cell extraction pattern where the final year digit is split from the rest
-of the date. The merged-header PMIS parser manifest is valid for week ending
-`2018-06-30`. The embedded-hour merged-header PMIS parser manifest is valid for
-week ending `2017-10-14`; it is separate because pdfplumber embeds the first
-hour and airport code in header cells. The hour-header PMIS parser manifest is
-valid from week ending `2017-02-11` through `2017-10-07`; it handles the same
-PMIS source column with a shortened `Hour` header. The early Hour-of-Day PMIS
-parser manifest is valid for week ending `2017-02-04`; it handles a local
-three-week report boundary with the standard `Hour of Day` PMIS header. The
-early hour-header PMIS parser manifest is valid from week ending `2017-01-21`
-through `2017-01-28`; it covers the earlier shortened-`Hour` PMIS island before
-the `2017-02-04` boundary report. The 2015 Hour-of-Day PMIS parser manifest is
-valid from week ending `2015-01-10` through `2015-01-27`; it covers the locally
-available 2015 PMIS reports. The March 2022 historical parser manifest is valid
-from week ending `2022-03-05` through `2022-03-26`. All locally available PDFs
-in `data/raw` parse successfully through week ending `2015-01-10`; no next
-local coverage boundary is currently known.
+### PMIS Total Customer Throughput layout
+
+PMIS reports use a nine-column table that adds `Metrics` and ends with:
+
+```text
+PMIS - Total Customer Throughput (Unadjusted)
+```
+
+These plugins normalize the count as
+`pmis_total_customer_throughput_unadjusted`. Separate implementations handle
+shortened `Hour` headers, split year digits, and cases where pdfplumber merges
+the first data row or hour into the header. The split-year parser repairs only
+the narrow observed year-cell pattern.
+
+All parsers validate headers and row shape, forward-fill only required
+date/hour/airport context, parse counts as integers, and raise `ParseError`
+rather than guessing through unfamiliar tables. Date windows are conservative
+and fixture-backed. `get_parser()` still requires `can_parse()` to recognize the
+actual PDF, so a date-range match alone is not treated as proof of compatibility.
 
 ## CLI Commands
 
@@ -534,7 +557,10 @@ Current coverage includes:
 - Report normalization.
 - Downloader idempotency and manifest updates using injected PDF bytes.
 - Parser registry and manifest loading.
-- Modern parser behavior against the PDF fixture.
+- All 12 parser implementations against representative historical and modern
+  PDF fixtures.
+- Parser coverage scanning, boundary ordering, metadata fallbacks, and failure
+  reporting.
 - CLI discovery, download, parse, parser inspection, and parse-all behavior.
 
 Default tests should not make live network calls. Live tests, if added, should
